@@ -46,10 +46,9 @@
 	{%- if config.extra.footer.show_powered_by %}
 	<p>
 		<small>
-			{{ macros_translate::translate(key="powered_by", default="Powered by", language_strings=language_strings) }} <a
-				class="link" href="https://www.getzola.org" rel="{{ rel_attributes }}">Zola</a> {{
-			macros_translate::translate(key="powered_by_and", default="and", language_strings=language_strings) }} <a
-				class="link" href="https://duckquill.daudix.one" rel="{{ rel_attributes }}">Duckquill</a>
+			{{ macros_translate::translate(key="powered_by", default="Powered by", language_strings=language_strings) }} Zola
+			{{
+			macros_translate::translate(key="powered_by_and", default="and", language_strings=language_strings) }} Duckquill
 		</small>
 	</p>
 	{%- endif %}

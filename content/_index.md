@@ -12,8 +12,22 @@ title = "Home"
   \/_/\/_/   \/_/ /_/   \/_/  \/_/   \/_/\/_/   \/_/ \/_/     `-'  
 ```
 {% end %}
-
 <br/>
-Hello,
+<p>
+Hello!
+</p>
+<p>
+You can check out the C++ chess engine i made here: <a href="https://github.com/ArmanDris/ChessEngines" target="_blank">ChessEngine</a>.
+</p>
+<p>
+The most useful thing ive written is <b>gpt-broker</b>, a microservice that manages an organization's third party API's. I wrote a small writeup, you can find it <a href="/work/gpt-broker">here</a>, it's github repo is <a href="https://github.com/ArmanDris/gpt-broker" target="_blank">here</a>.
+</p>
+<p>
+I am hosting two machine learning projects from a computer in my room.
+<br/>
+<b>DinoMatch</b> performs image similarity searches. (<a href="https://dinomatch.drismir.ca" target="_blank">live website</a>) (<a href="https://github.com/ArmanDris/DinoMatch" target="_blank">github repo</a>)
+<br/>
+<b>DefaultDetector</b> predicts credit card defaults using people's credit histroy. (<a href="https://defaultdetector.drismir.ca" target="_blank">live website</a>) (<a href="https://github.com/ArmanDris/DefaultDetector" target="_blank">github repo</a>)
+</p>
 
-This is where I catalog all the fun CS related things I have built.
+Right now I am having fun with erlang and the parallel computing class im in. I am also slowly learning Kubernetes since ive outgrown docker-compose.

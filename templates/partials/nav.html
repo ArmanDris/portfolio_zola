@@ -10,7 +10,7 @@
 			<li id="home">
 				<a href="{{ get_url(path='/', lang=lang) }}" {%- if current_url | default(value="/" ) | trim_end_matches(pat="/"
 					) | safe==get_url(path="/" , lang=lang) | trim_end_matches(pat='/' ) | safe -%} class="active" {%- endif -%}>
-					{{- config.title -}}
+					Home
 				</a>
 			</li>
 			{%- for link in config.extra.nav.links %}
@@ -66,19 +66,19 @@
 			{%- endfor -%}
 			<li id="github">
 				<a class="circle" href="https://github.com/ArmanDris" target="_blank"
-				title="{{ macros_translate::translate(key='github', default='GitHub', language_strings=language_strings) }}">
+					title="{{ macros_translate::translate(key='github', default='GitHub', language_strings=language_strings) }}">
 					<i class="icon"></i>
 				</a>
 			</li>
 			<li id="linkedin">
 				<a class="circle" href="https://www.linkedin.com/in/arman-drismir-b378011b9/" target="_blank"
-				title="{{ macros_translate::translate(key='linkedin', default='LinkedIn', language_strings=language_strings) }}">
+					title="{{ macros_translate::translate(key='linkedin', default='LinkedIn', language_strings=language_strings) }}">
 					<i class="icon"></i>
 				</a>
 			</li>
 			<li id="instagram">
 				<a class="circle" href="https://instagram.com/armandrismir/" target="_blank"
-				title="{{ macros_translate::translate(key='instagram', default='Instagram', language_strings=language_strings) }}">
+					title="{{ macros_translate::translate(key='instagram', default='Instagram', language_strings=language_strings) }}">
 					<i class="icon"></i>
 				</a>
 			</li>
