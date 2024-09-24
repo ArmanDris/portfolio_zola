@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Arman - Redis</title>
+      <link>/</link>
+      <description>Personal site, using Zola&#x27;s Duckquill theme.</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="/tags/redis/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Sat, 31 Aug 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>gpt-broker</title>
+          <pubDate>Sat, 31 Aug 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/work/gpt-broker/</link>
+          <guid>/work/gpt-broker/</guid>
+          <description xml:base="/work/gpt-broker/">&lt;p&gt;SkillSync uses a lot of OpenAI API chat completions. We needed to:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Keep API keys out of client side code&lt;&#x2F;li&gt;
+&lt;li&gt;Secure our ChatGPT endpoints to prevent someone from running up our bill maliciously 😵&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;To keep development with OpenAI as frictionless as possible I developed gpt-broker. The idea is that gpt-broker takes an access_token and a prompt and handles everything else under the hood.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;how-it-works&quot;&gt;How it works:&lt;&#x2F;h3&gt;
+&lt;p&gt;A call to gpt-broker’s API looks like this:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;POST &#x2F;advanced-gpt-4o-mini-complete
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Authorization: Bearer &amp;lt;access_token&amp;gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;[
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    { role: &amp;#39;system&amp;#39;, content: &amp;quot;Write me a poem&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    ...
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;gpt-broker processes the quest like this:
+&lt;img src=&quot;&#x2F;work&#x2F;gpt-broker&#x2F;gpt-broker-process.png&quot; alt=&quot;graph of how gpt-broker handles a request&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;why-use-redis&quot;&gt;Why use Redis?&lt;&#x2F;h3&gt;
+&lt;p&gt;It might seem weird that we use Redis to track usage since Supabase is a database and we need to validate the access token with them anyway. At first I did use supabase to track usage but I found out I was wasting a lot of time waiting for the request to move to&#x2F;from supabase. With Redis we can run the cache locally and have almost no latency.&lt;&#x2F;p&gt;
+&lt;p&gt;Here is a breakdown of the time taken for a request with supabase&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Validate User:    174ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Check Rate Limit: 234ms (update Supabase DB)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;GPT:              677ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;---------------------------
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Total:            1085ms
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And this is with a local Redis cache:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;ValidateUser:   174ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;CheckRateLimit: 4ms     (update local Redis cache)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;GPT:            677ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;-------------------------
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Total:          855ms
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We save 230ms! Which is small for a human but still noticeable.&lt;&#x2F;p&gt;
+</description>
+      </item>
+    </channel>
+</rss>

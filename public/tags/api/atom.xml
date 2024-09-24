@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Arman - API</title>
+    <subtitle>Personal site, using Zola&#x27;s Duckquill theme.</subtitle>
+    <link rel="self" type="application/atom+xml" href="/tags/api/atom.xml"/>
+    <link rel="alternate" type="text/html" href="/"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2024-01-20T00:00:00+00:00</updated>
+    <id>/tags/api/atom.xml</id>
+    <entry xml:lang="en">
+        <title>LinkedIn Scraper</title>
+        <published>2024-01-20T00:00:00+00:00</published>
+        <updated>2024-01-20T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            Arman Drismir
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="/work/linkedin-scraper/"/>
+        <id>/work/linkedin-scraper/</id>
+        
+        <content type="html" xml:base="/work/linkedin-scraper/">&lt;p&gt;Using the LinkedIn API to get jobs postings was a bit of an art. To organize my efforts this is the report I made with my method and results.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fetch-jobs-report&quot;&gt;Fetch Jobs Report&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;problem&quot;&gt;Problem:&lt;&#x2F;h3&gt;
+&lt;p&gt;Dealing with LinkedIn’s rate limiting is very hard. It is very unclear what causes rate limiting.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;solution&quot;&gt;Solution:&lt;&#x2F;h3&gt;
+&lt;p&gt;It seems LinkedIn’s rate limiting is not influenced much by frequency. Using proxies does not work well since the free proxy lists I was scraping were very poor quality(90% broken). A very effective solution is to handle failures gracefully. I try each request 7 times one after another. This improves request success from ~20% to ~99%. Even if I still fail to fetch a job posting I still don’t stop, I just remove the job posting from the list and continue. Another important solution is to clearly differentiate between HTML parsing errors and failed requests. Failed requests are unfixable but failed parsing is. Now I have a ~99% success rate with html parsing which means I do not waste time waiting for a request I will not even be able to use.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;results&quot;&gt;Results:&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;5 job postings went from &lt;strong&gt;~18&lt;&#x2F;strong&gt; seconds to &lt;strong&gt;~4.7&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Success rate went from &lt;strong&gt;~20%&lt;&#x2F;strong&gt; to &lt;strong&gt;~99%&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;These were accomplished by:
+&lt;ul&gt;
+&lt;li&gt;Perfecting HTML parsing. &lt;strong&gt;~100%&lt;&#x2F;strong&gt; of requests are successfully parsed&lt;&#x2F;li&gt;
+&lt;li&gt;Do not hard fail on failed request. Instead try up to 7 times before abandoning request&lt;&#x2F;li&gt;
+&lt;li&gt;Do not hard fail on abandoned requests. Instead remove job from array and continue&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+</feed>

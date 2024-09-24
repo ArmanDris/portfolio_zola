@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Arman</title>
+      <link>/</link>
+      <description>Personal site, using Zola&#x27;s Duckquill theme.</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Sun, 01 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Resume Builder</title>
+          <pubDate>Sun, 01 Sep 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/work/resume-builder/</link>
+          <guid>/work/resume-builder/</guid>
+          <description xml:base="/work/resume-builder/">&lt;p&gt;I designed a resume builder so that our users can easily create resumes using Jake’s Template. It also comes with some options to generate sections of your Resume with Chat GPT. Generating highlights using the Chat GPT wrapper makes resume building super fast.
+&lt;img src=&quot;&#x2F;work&#x2F;resume-builder&#x2F;ResumeBuilder.png&quot; alt=&quot;Preview of the Resume Builder I made&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Pretty much all of development revolved around the Resume type definition:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;export interface Resume {
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    resume_id: string;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    label: string; &#x2F;&#x2F; Shown to the user to identify resume
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    full_name: string;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    phone_number: string;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    email: string;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    personal_website: string;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    linkedin: string;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    github: string;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    education: EducationSection[];
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    experience: ExperienceSection[];
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    projects: ProjectsSection[];
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    technical_skills: SkillsSection[];
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;wrestling-with-state-updates&quot;&gt;Wrestling with State Updates:&lt;&#x2F;h2&gt;
+&lt;p&gt;Each of these attributes are their own state in the resume builder, so to update an attribute of any index in &lt;code&gt;EducationSection[]&lt;&#x2F;code&gt; we need to create a new section with the updates value and also a new array with the updated index. If we take for example, updating a single highlight within an project section, the code looks like this:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;onChange={(e) =&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    let new_highlights: string[] = [...prj.highlights];
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    new_highlights[hi_index] = e.target.value;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    const new_prj: ProjectsSection = { ...prj, highlights: new_highlights, };
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    const new_prjs: ProjectsSection[] = [...projects];
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    new_prjs[index] = new_prj;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    setProjects(new_prjs);
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;}}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This logic cannot be trivially put inside a helper function for all the sections to use since TypeScript complains that since the sections have different fields its illegal to allow the helper function to operate on the setter function. Getting around this would require a typescript type hack or adding inheritance in my data types.&lt;&#x2F;p&gt;
+&lt;p&gt;I decided that the added complexity and separation of related code would do more harm than good and stuck with the simple solution.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;syncing-the-resume&quot;&gt;Syncing the Resume:&lt;&#x2F;h2&gt;
+&lt;p&gt;With a clearly defined type for each resume, syncing to Supabase is very easy. I just made a table with each property and then I can directly upload my Resume variables to Supabase. Since each property has its own state we can also auto save on every chance win a single &lt;code&gt;useEffect&lt;&#x2F;code&gt;. Since I thought naming conflicts would be a nightmare to deal with, especially if I risk overwriting another Resume, I added a uuid for each resume. I did not know that it was acceptable to create uuid’s without checking that no other matching ones exist. It is a very nice system though since it makes creating resumes while offline possible.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;overall&quot;&gt;Overall:&lt;&#x2F;h2&gt;
+&lt;p&gt;I am very happy I decided to clearly define my data first, then build my components around my data. The type definitions I came up with made the overall structure very simple and the details harder. Which is much better than the other way around.&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>gpt-broker</title>
+          <pubDate>Sat, 31 Aug 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/work/gpt-broker/</link>
+          <guid>/work/gpt-broker/</guid>
+          <description xml:base="/work/gpt-broker/">&lt;p&gt;SkillSync uses a lot of OpenAI API chat completions. We needed to:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Keep API keys out of client side code&lt;&#x2F;li&gt;
+&lt;li&gt;Secure our ChatGPT endpoints to prevent someone from running up our bill maliciously 😵&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;To keep development with OpenAI as frictionless as possible I developed gpt-broker. The idea is that gpt-broker takes an access_token and a prompt and handles everything else under the hood.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;how-it-works&quot;&gt;How it works:&lt;&#x2F;h3&gt;
+&lt;p&gt;A call to gpt-broker’s API looks like this:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;POST &#x2F;advanced-gpt-4o-mini-complete
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Authorization: Bearer &amp;lt;access_token&amp;gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;[
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    { role: &amp;#39;system&amp;#39;, content: &amp;quot;Write me a poem&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    ...
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;gpt-broker processes the quest like this:
+&lt;img src=&quot;&#x2F;work&#x2F;gpt-broker&#x2F;gpt-broker-process.png&quot; alt=&quot;graph of how gpt-broker handles a request&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;why-use-redis&quot;&gt;Why use Redis?&lt;&#x2F;h3&gt;
+&lt;p&gt;It might seem weird that we use Redis to track usage since Supabase is a database and we need to validate the access token with them anyway. At first I did use supabase to track usage but I found out I was wasting a lot of time waiting for the request to move to&#x2F;from supabase. With Redis we can run the cache locally and have almost no latency.&lt;&#x2F;p&gt;
+&lt;p&gt;Here is a breakdown of the time taken for a request with supabase&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Validate User:    174ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Check Rate Limit: 234ms (update Supabase DB)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;GPT:              677ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;---------------------------
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Total:            1085ms
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And this is with a local Redis cache:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;ValidateUser:   174ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;CheckRateLimit: 4ms     (update local Redis cache)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;GPT:            677ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;-------------------------
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Total:          855ms
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We save 230ms! Which is small for a human but still noticeable.&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>AgroBot Website</title>
+          <pubDate>Thu, 22 Aug 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/work/agrobot-website/</link>
+          <guid>/work/agrobot-website/</guid>
+          <description xml:base="/work/agrobot-website/">&lt;p&gt;After eight busy months the WebDev team finally finished the UBC AgroBot website!
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;ubcagrobot.com&quot;&gt;ubcagrobot.com&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The coolest part of the website is the 3d models of the robots we are buildings. You can even drag them around!&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;work&#x2F;agrobot-website&#x2F;3d_model.png&quot; alt=&quot;3d model of agrobot&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;My favorite component is the recruitment timeline I made. I learned about some awful JavaScript Date related properties while making this.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;work&#x2F;agrobot-website&#x2F;timeline.png&quot; alt=&quot;UBC Agrobot recruitment timeline&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;We still need to come up with an actual hosting solution and we need to develop something the marketing team can use to publish new articles. Overall I am very happy with how the website turned out, it feels good to finally publish 😮‍💨.&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>Dino Match</title>
+          <pubDate>Sat, 27 Jul 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/projects/dino-match/</link>
+          <guid>/projects/dino-match/</guid>
+          <description xml:base="/projects/dino-match/">&lt;p&gt;
+Dino match is a very cool project that mixes facebook&#x27;s Dino vector embedder, Qdrant a vector database, and Svelte Kit a frontend web framework.
+&lt;&#x2F;p&gt;
+&lt;p&gt;
+By combining all of these into a Flask app I am able to perform reverse image searches!
+&lt;&#x2F;p&gt;
+&lt;p&gt;
+The app works by creating vector embeddings for all of the data in its &lt;b&gt;data&lt;&#x2F;b&gt; folder. The app then uploads the embeddings to QDrant. After QDrant has all the embeddings then the website is served. When a client opens the site it requests sample images to be sent by the backend. It then displays the sample images for the user. When the user clicks &quot;Run Similarity Search&quot; the image is Base64 encoded again and sent to the backend. Once the backend has the image it creates an embedding with it and queries QDrant using the embedding. Qdrant then responds with similar image embeddings and the backend sends these images back to the front end.
+&lt;&#x2F;p&gt;
+&lt;p&gt;
+Since the backend can receive any Base64 encoded image a crafty user could easily send their own images to run similarity searches on. This also means that a small update could let users upload their own images but I doubt ill ever get to implementing that.
+&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>Autofiller</title>
+          <pubDate>Sat, 20 Jul 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/drafts/autofiller/</link>
+          <guid>/drafts/autofiller/</guid>
+          <description xml:base="/drafts/autofiller/">&lt;p&gt;…&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>Default Detector</title>
+          <pubDate>Sat, 01 Jun 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/projects/default-detector/</link>
+          <guid>/projects/default-detector/</guid>
+          <description xml:base="/projects/default-detector/">&lt;p&gt;I built a svelte&#x2F;flask app around the ML model I made for a CPSC 330 class project.&lt;&#x2F;p&gt;
+&lt;div&gt;
+   &lt;h2&gt;Dataset &amp;amp; Metrics&lt;&#x2F;h2&gt;
+   &lt;p&gt;This dataset is imbalanced, 22% of clients default while 78% do not. For
+      this reason F1 score and Recall are the metrics we want to pay a lot of
+      attention to. F1 score will give us a good indication of overall
+      performance and Recall will tell us how well our model preforms when it
+      sees the clients who do default.
+   &lt;&#x2F;p&gt;
+   &lt;p&gt;The Kaggle page has descriptions for what values in the columns
+      represent. &lt;a href=&quot;https:&#x2F;&#x2F;www.kaggle.com&#x2F;datasets&#x2F;uciml&#x2F;default-of-credit-card-clients-dataset&quot; target=&quot;_blank&quot; class=&quot;underline&quot;&gt;Link to dataset.&lt;&#x2F;a&gt;
+   &lt;&#x2F;p&gt;
+   &lt;h2&gt;Best Model&lt;&#x2F;h2&gt;
+   &lt;p&gt;I was able to get a test accuracy of 82% using CatBoost with
+      hyperparameters I found using RandomizedSearch. The results were less
+      than I expected since a dummy classifier scores 78%. Running
+      RandomizedSearch on a more powerful computer would have probably allowed
+      me to squeeze a few more points of accuracy. The overall f1, recall, and
+      precision scores are good but when looking specifically at the default
+      class they are very bad. It would be interesting to train a new model
+      that sacrifices accuracy for recall in the DEFAULT class.
+   &lt;&#x2F;p&gt;
+   &lt;table&gt;
+      &lt;tbody&gt;
+         &lt;tr&gt;
+            &lt;th&gt;&lt;&#x2F;th&gt;
+            &lt;th&gt;precision&lt;&#x2F;th&gt;
+            &lt;th&gt;recall&lt;&#x2F;th&gt;
+            &lt;th&gt;f1-score&lt;&#x2F;th&gt;
+         &lt;&#x2F;tr&gt;
+         &lt;tr&gt;
+            &lt;td&gt;PAID&lt;&#x2F;td&gt;
+            &lt;td&gt;0.84&lt;&#x2F;td&gt;
+            &lt;td&gt;0.95&lt;&#x2F;td&gt;
+            &lt;td&gt;0.89&lt;&#x2F;td&gt;
+         &lt;&#x2F;tr&gt;
+         &lt;tr&gt;
+            &lt;td&gt;DEFAULT&lt;&#x2F;td&gt;
+            &lt;td&gt;0.68&lt;&#x2F;td&gt;
+            &lt;td&gt;0.37&lt;&#x2F;td&gt;
+            &lt;td&gt;0.48&lt;&#x2F;td&gt;
+         &lt;&#x2F;tr&gt;
+         &lt;tr&gt;
+            &lt;td&gt;average&lt;&#x2F;td&gt;
+            &lt;td&gt;0.81&lt;&#x2F;td&gt;
+            &lt;td&gt;0.82&lt;&#x2F;td&gt;
+            &lt;td&gt;0.80&lt;&#x2F;td&gt;
+         &lt;&#x2F;tr&gt;
+      &lt;&#x2F;tbody&gt;
+   &lt;&#x2F;table&gt;
+   &lt;h2&gt;All Models&lt;&#x2F;h2&gt;
+   &lt;h3&gt;Linear Regression&lt;&#x2F;h3&gt;
+   &lt;p&gt;Train score: 0.810524, improved to 0.8106 with HPO &lt;span style=&quot;color: #859900;&quot;&gt;(+0.000076)&lt;&#x2F;span&gt;.&lt;&#x2F;p&gt;
+   &lt;h3&gt;SVC&lt;&#x2F;h3&gt;
+   &lt;p&gt;Train score: 0.8177, improved to 0.8183 with HPO &lt;span style=&quot;color: #859900;&quot;&gt;(+0.0006)&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+   &lt;h3&gt;Gradient Boosted Trees&lt;&#x2F;h3&gt;
+   &lt;p&gt;Train score: 0.8190, decreased to 0.8189 with HPO &lt;span style=&quot;color: #dc322f&quot;&gt;(-0.0001)&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+   &lt;h3&gt;CatBoost&lt;&#x2F;h3&gt;
+   &lt;p&gt;Train score: 0.8175, improved to 0.8214 with HPO &lt;span style=&quot;color: #859900;&quot; &gt;(+0.0039)&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+</description>
+      </item>
+      <item>
+          <title>LinkedIn Scraper</title>
+          <pubDate>Sat, 20 Jan 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/work/linkedin-scraper/</link>
+          <guid>/work/linkedin-scraper/</guid>
+          <description xml:base="/work/linkedin-scraper/">&lt;p&gt;Using the LinkedIn API to get jobs postings was a bit of an art. To organize my efforts this is the report I made with my method and results.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fetch-jobs-report&quot;&gt;Fetch Jobs Report&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;problem&quot;&gt;Problem:&lt;&#x2F;h3&gt;
+&lt;p&gt;Dealing with LinkedIn’s rate limiting is very hard. It is very unclear what causes rate limiting.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;solution&quot;&gt;Solution:&lt;&#x2F;h3&gt;
+&lt;p&gt;It seems LinkedIn’s rate limiting is not influenced much by frequency. Using proxies does not work well since the free proxy lists I was scraping were very poor quality(90% broken). A very effective solution is to handle failures gracefully. I try each request 7 times one after another. This improves request success from ~20% to ~99%. Even if I still fail to fetch a job posting I still don’t stop, I just remove the job posting from the list and continue. Another important solution is to clearly differentiate between HTML parsing errors and failed requests. Failed requests are unfixable but failed parsing is. Now I have a ~99% success rate with html parsing which means I do not waste time waiting for a request I will not even be able to use.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;results&quot;&gt;Results:&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;5 job postings went from &lt;strong&gt;~18&lt;&#x2F;strong&gt; seconds to &lt;strong&gt;~4.7&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Success rate went from &lt;strong&gt;~20%&lt;&#x2F;strong&gt; to &lt;strong&gt;~99%&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;These were accomplished by:
+&lt;ul&gt;
+&lt;li&gt;Perfecting HTML parsing. &lt;strong&gt;~100%&lt;&#x2F;strong&gt; of requests are successfully parsed&lt;&#x2F;li&gt;
+&lt;li&gt;Do not hard fail on failed request. Instead try up to 7 times before abandoning request&lt;&#x2F;li&gt;
+&lt;li&gt;Do not hard fail on abandoned requests. Instead remove job from array and continue&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</description>
+      </item>
+    </channel>
+</rss>

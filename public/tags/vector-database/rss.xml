@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Arman - Vector Database</title>
+      <link>/</link>
+      <description>Personal site, using Zola&#x27;s Duckquill theme.</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="/tags/vector-database/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Sat, 27 Jul 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Dino Match</title>
+          <pubDate>Sat, 27 Jul 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/projects/dino-match/</link>
+          <guid>/projects/dino-match/</guid>
+          <description xml:base="/projects/dino-match/">&lt;p&gt;
+Dino match is a very cool project that mixes facebook&#x27;s Dino vector embedder, Qdrant a vector database, and Svelte Kit a frontend web framework.
+&lt;&#x2F;p&gt;
+&lt;p&gt;
+By combining all of these into a Flask app I am able to perform reverse image searches!
+&lt;&#x2F;p&gt;
+&lt;p&gt;
+The app works by creating vector embeddings for all of the data in its &lt;b&gt;data&lt;&#x2F;b&gt; folder. The app then uploads the embeddings to QDrant. After QDrant has all the embeddings then the website is served. When a client opens the site it requests sample images to be sent by the backend. It then displays the sample images for the user. When the user clicks &quot;Run Similarity Search&quot; the image is Base64 encoded again and sent to the backend. Once the backend has the image it creates an embedding with it and queries QDrant using the embedding. Qdrant then responds with similar image embeddings and the backend sends these images back to the front end.
+&lt;&#x2F;p&gt;
+&lt;p&gt;
+Since the backend can receive any Base64 encoded image a crafty user could easily send their own images to run similarity searches on. This also means that a small update could let users upload their own images but I doubt ill ever get to implementing that.
+&lt;&#x2F;p&gt;
+</description>
+      </item>
+    </channel>
+</rss>
