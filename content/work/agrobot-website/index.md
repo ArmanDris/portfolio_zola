@@ -15,7 +15,7 @@ The coolest part of the website is the 3d models of the robots we are buildings.
 
 ![3d model of agrobot](3d_model.png)
 
-My fravorite component is the recruitment timeline I made. I learned about some awful JavaScript Date related properties while making this.
+My favorite component is the recruitment timeline I made. I learned about some awful JavaScript Date related properties while making this.
 
 ![UBC Agrobot recruitment timeline](timeline.png)
 
