@@ -5,4 +5,4 @@ template = "article_list.html"
 page_template = "article.html"
 +++
 
-Work related projects.
+Work related write ups.
