@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Arman - TailwindCSS</title>
+      <link>/</link>
+      <description>Personal site, using Zola&#x27;s Duckquill theme.</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="/tags/tailwindcss/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Thu, 22 Aug 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>AgroBot Website</title>
+          <pubDate>Thu, 22 Aug 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/work/agrobot-website/</link>
+          <guid>/work/agrobot-website/</guid>
+          <description xml:base="/work/agrobot-website/">&lt;p&gt;After eight busy months the WebDev team finally finished the UBC AgroBot website!
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;ubcagrobot.com&quot;&gt;ubcagrobot.com&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The coolest part of the website is the 3d models of the robots we are buildings. You can even drag them around!&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;work&#x2F;agrobot-website&#x2F;3d_model.png&quot; alt=&quot;3d model of agrobot&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;My fravorite component is the recruitment timeline I made. I learned about some awful JavaScript Date related properties while making this.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;work&#x2F;agrobot-website&#x2F;timeline.png&quot; alt=&quot;UBC Agrobot recruitment timeline&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;We still need to come up with an actual hosting solution and we need to develop something the marketing team can use to publish new articles. Overall I am very happy with how the website turned out, it feels good to finally publish 😮‍💨.&lt;&#x2F;p&gt;
+</description>
+      </item>
+    </channel>
+</rss>

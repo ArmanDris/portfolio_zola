@@ -1,5 +1,5 @@
 title = "Arman"
-base_url = "https://drismir.ca"
+base_url = "/"
 description = "Personal site, using Zola's Duckquill theme."
 
 compile_sass = true

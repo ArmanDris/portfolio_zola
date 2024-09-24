@@ -29,5 +29,9 @@ I am hosting two machine learning projects from a computer in my room.
 <br/>
 <b>DefaultDetector</b> predicts credit card defaults using people's credit histroy. (<a href="https://defaultdetector.drismir.ca" target="_blank">live website</a>) (<a href="https://github.com/ArmanDris/DefaultDetector" target="_blank">github repo</a>)
 </p>
-
-Right now I am having fun with erlang and the parallel computing class im in. I am also slowly learning Kubernetes since ive outgrown docker-compose.
+<p>
+My first full stack project was a Sudoku web app. You can play it <a href="https://sudoku.drismir.ca" target="_blank">here</a>!
+</p>
+<p>
+Right now I am having fun with erlang and the parallel computing class im in. 
+</p>

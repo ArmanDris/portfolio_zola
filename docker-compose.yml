@@ -2,5 +2,5 @@ services:
   portfolio_zola:
     build: .
     ports:
-      - "8000:1111"
+      - "1111:80"
     restart: always
