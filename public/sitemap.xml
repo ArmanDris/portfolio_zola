@@ -11,6 +11,10 @@
         <loc>/projects/</loc>
     </url>
     <url>
+        <loc>/projects/cpp-chess-engine/</loc>
+        <lastmod>2023-07-30</lastmod>
+    </url>
+    <url>
         <loc>/projects/default-detector/</loc>
         <lastmod>2024-06-01</lastmod>
     </url>
@@ -19,13 +23,29 @@
         <lastmod>2024-07-27</lastmod>
     </url>
     <url>
+        <loc>/projects/med-ethics/</loc>
+        <lastmod>2024-12-05</lastmod>
+    </url>
+    <url>
         <loc>/tags/</loc>
+    </url>
+    <url>
+        <loc>/tags/algorithm-design/</loc>
     </url>
     <url>
         <loc>/tags/api/</loc>
     </url>
     <url>
+        <loc>/tags/c/</loc>
+    </url>
+    <url>
         <loc>/tags/catboost/</loc>
+    </url>
+    <url>
+        <loc>/tags/cmake/</loc>
+    </url>
+    <url>
+        <loc>/tags/css/</loc>
     </url>
     <url>
         <loc>/tags/docker/</loc>
@@ -56,6 +76,9 @@
     </url>
     <url>
         <loc>/tags/scikit-learn/</loc>
+    </url>
+    <url>
+        <loc>/tags/sfml/</loc>
     </url>
     <url>
         <loc>/tags/supabase/</loc>
