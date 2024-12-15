@@ -28,6 +28,9 @@ I love to host various projects I have developed, some of them are:
 
 <br/>
 <br/>
+<b>Dino Match</b> reverse image search using an image vectorizer function and vector similarity search function<br/>
+(<a href="https://dinomatch.drismir.ca" target="_blank">live website</a>) (<a href="https://github.com/ArmanDris/Dinomatch" target="_blank">github repo</a>)
+
 <b>DefaultDetector</b> predicts credit card defaults using people's credit history<br/>
 (<a href="https://defaultdetector.drismir.ca" target="_blank">live website</a>) (<a href="https://github.com/ArmanDris/DefaultDetector" target="_blank">github repo</a>)
 
