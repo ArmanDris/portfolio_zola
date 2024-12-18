@@ -11,6 +11,10 @@
         <loc>/projects/</loc>
     </url>
     <url>
+        <loc>/projects/coco-miner/</loc>
+        <lastmod>2024-12-05</lastmod>
+    </url>
+    <url>
         <loc>/projects/cpp-chess-engine/</loc>
         <lastmod>2023-07-30</lastmod>
     </url>
@@ -45,6 +49,9 @@
         <loc>/tags/cmake/</loc>
     </url>
     <url>
+        <loc>/tags/crypto/</loc>
+    </url>
+    <url>
         <loc>/tags/css/</loc>
     </url>
     <url>
@@ -52,6 +59,9 @@
     </url>
     <url>
         <loc>/tags/extension/</loc>
+    </url>
+    <url>
+        <loc>/tags/grafana/</loc>
     </url>
     <url>
         <loc>/tags/javascript/</loc>
@@ -64,6 +74,9 @@
     </url>
     <url>
         <loc>/tags/microservice/</loc>
+    </url>
+    <url>
+        <loc>/tags/prometheus/</loc>
     </url>
     <url>
         <loc>/tags/python/</loc>
