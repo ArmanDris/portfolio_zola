@@ -108,6 +108,7 @@ show_repo = false
 links = [
 	{ url = "@/work/_index.md", name = "Work" },
 	{ url = "@/projects/_index.md", name = "Projects"},
+	{ url = "/Arman_s_Resume.pdf", name = "Resume"},
 ]
 
 [extra.footer]
