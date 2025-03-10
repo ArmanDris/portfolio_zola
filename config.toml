@@ -1,6 +1,6 @@
 title = "Arman"
 base_url = "/"
-description = "Personal site, using Zola's Duckquill theme."
+description = "Hello!"
 
 compile_sass = true
 minify_html = true

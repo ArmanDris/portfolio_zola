@@ -3,7 +3,7 @@
     <channel>
       <title>Arman - Machine Learning</title>
       <link>/</link>
-      <description>Personal site, using Zola&#x27;s Duckquill theme.</description>
+      <description>Hello!</description>
       <generator>Zola</generator>
       <language>en</language>
       <atom:link href="/tags/machine-learning/rss.xml" rel="self" type="application/rss+xml"/>
