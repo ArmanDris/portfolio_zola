@@ -4,7 +4,7 @@ title = "Parallel computing with Gleam!"
 description = "Using gleam's Erlang features to parallelize a reduce function"
 date = 2025-03-05
 [taxonomies]
-tags = ["CSS"]
+tags = ["Gleam", "Erlang", "Parallel Computing"]
 [extra]
 disclaimer = "This is still a work in progress so the data is a little messy in some places"
 +++

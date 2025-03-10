@@ -66,7 +66,13 @@
         <loc>/tags/docker/</loc>
     </url>
     <url>
+        <loc>/tags/erlang/</loc>
+    </url>
+    <url>
         <loc>/tags/extension/</loc>
+    </url>
+    <url>
+        <loc>/tags/gleam/</loc>
     </url>
     <url>
         <loc>/tags/grafana/</loc>
@@ -82,6 +88,9 @@
     </url>
     <url>
         <loc>/tags/microservice/</loc>
+    </url>
+    <url>
+        <loc>/tags/parallel-computing/</loc>
     </url>
     <url>
         <loc>/tags/prometheus/</loc>
