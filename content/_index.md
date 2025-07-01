@@ -23,11 +23,10 @@ I would recommend my <a href="/projects/cpp-chess-engine/">chess engine writeup<
 <p>
 On the work side of things, my fav is <b>gpt-broker</b>, a microservice that manages an organization's third party API's. I wrote a small writeup, you can find it <a href="/work/gpt-broker">here</a>, it's github repo is <a href="https://github.com/ArmanDris/gpt-broker" target="_blank">here</a>.
 </p>
+<br/>
 <p>
-I love to host various projects I have developed, some of them are:  
-
-<br/>
-<br/>
+I love hosting my projects. These ones are online right now:
+</p>
 <b>coconut-mine</b> minute by minute stats on the old pc i am using to mine NEXA coin<br/>(<a href="https://coconut-mine.drismir.ca/d/de78xri7hrugwf/coco-min?&kiosk" target="_blank">live website</a>)
 
 <b>Dino Match</b> reverse image search using an image vectorizer function and vector similarity search function<br/>
