@@ -12,10 +12,10 @@
           <title>Resume Builder</title>
           <pubDate>Sun, 01 Sep 2024 00:00:00 +0000</pubDate>
           <author>Arman Drismir</author>
-          <link>/work/resume-builder/</link>
-          <guid>/work/resume-builder/</guid>
-          <description xml:base="/work/resume-builder/">&lt;p&gt;I designed a resume builder so that our users can easily create resumes using Jake’s Template. It also comes with some options to generate sections of your Resume with Chat GPT. Generating highlights using the Chat GPT wrapper makes resume building super fast.
-&lt;img src=&quot;&#x2F;work&#x2F;resume-builder&#x2F;ResumeBuilder.png&quot; alt=&quot;Preview of the Resume Builder I made&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+          <link>/drafts/resume-builder/</link>
+          <guid>/drafts/resume-builder/</guid>
+          <description xml:base="/drafts/resume-builder/">&lt;p&gt;I designed a resume builder so that our users can easily create resumes using Jake’s Template. It also comes with some options to generate sections of your Resume with Chat GPT. Generating highlights using the Chat GPT wrapper makes resume building super fast.
+&lt;img src=&quot;&#x2F;drafts&#x2F;resume-builder&#x2F;ResumeBuilder.png&quot; alt=&quot;Preview of the Resume Builder I made&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;Pretty much all of development revolved around the Resume type definition:&lt;&#x2F;p&gt;
 &lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;export interface Resume {
 &lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    resume_id: string;

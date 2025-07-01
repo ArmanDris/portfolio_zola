@@ -8,6 +8,14 @@
         <lastmod>2024-07-20</lastmod>
     </url>
     <url>
+        <loc>/drafts/linkedin-scraper/</loc>
+        <lastmod>2024-01-20</lastmod>
+    </url>
+    <url>
+        <loc>/drafts/resume-builder/</loc>
+        <lastmod>2024-09-01</lastmod>
+    </url>
+    <url>
         <loc>/projects/</loc>
     </url>
     <url>
@@ -25,10 +33,6 @@
     <url>
         <loc>/projects/dino-match/</loc>
         <lastmod>2024-07-27</lastmod>
-    </url>
-    <url>
-        <loc>/projects/leet-code-languish/</loc>
-        <lastmod>2025-03-06</lastmod>
     </url>
     <url>
         <loc>/projects/med-ethics/</loc>
@@ -141,13 +145,5 @@
     <url>
         <loc>/work/gpt-broker/</loc>
         <lastmod>2024-08-31</lastmod>
-    </url>
-    <url>
-        <loc>/work/linkedin-scraper/</loc>
-        <lastmod>2024-01-20</lastmod>
-    </url>
-    <url>
-        <loc>/work/resume-builder/</loc>
-        <lastmod>2024-09-01</lastmod>
     </url>
 </urlset>

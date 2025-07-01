@@ -12,9 +12,9 @@
           <title>LinkedIn Scraper</title>
           <pubDate>Sat, 20 Jan 2024 00:00:00 +0000</pubDate>
           <author>Arman Drismir</author>
-          <link>/work/linkedin-scraper/</link>
-          <guid>/work/linkedin-scraper/</guid>
-          <description xml:base="/work/linkedin-scraper/">&lt;p&gt;Using the LinkedIn API to get jobs postings was a bit of an art. To organize my efforts this is the report I made with my method and results.&lt;&#x2F;p&gt;
+          <link>/drafts/linkedin-scraper/</link>
+          <guid>/drafts/linkedin-scraper/</guid>
+          <description xml:base="/drafts/linkedin-scraper/">&lt;p&gt;Using the LinkedIn API to get jobs postings was a bit of an art. To organize my efforts this is the report I made with my method and results.&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;fetch-jobs-report&quot;&gt;Fetch Jobs Report&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;problem&quot;&gt;Problem:&lt;&#x2F;h3&gt;
 &lt;p&gt;Dealing with LinkedIn’s rate limiting is very hard. It is very unclear what causes rate limiting.&lt;&#x2F;p&gt;
