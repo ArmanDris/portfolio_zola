@@ -38,11 +38,7 @@ I love to host various projects I have developed, some of them are:
 
 <b>Sudoku web app</b> this was my very first full stack project<br/>
 (<a href="https://sudoku.drismir.ca" target="_blank">live website</a>) (<a href="https://github.com/ArmanDris/Sudoku" target="_blank">github repo</a>)
-
-<b>Med Ethics Sudoku web app</b> my sudoku app built for the UBC medical ethics newsletter!<br/>
-(<a href="https://med-ethics.drismir.ca" target="_blank">live website</a>) (<a href="https://github.com/ArmanDris/Sudoku/tree/med-ethics" target="_blank">github repo</a>)
 <br/>
 <br/>
 </p>
 <p>
-Right now my attention is split between school, SkillSync and UBC Agrobot. At SkillSync I am developing an AI Interviewer that will automate the interview process for recruiters. At UBC Agrobot I am developing a motor control system using an Arduino and Nvidia Jetson. I am also developing an autonomous driving system to place on top of the motor control system.
