@@ -127,14 +127,14 @@
           <title>Using an old PC to mine crypto 😳 😬</title>
           <pubDate>Thu, 05 Dec 2024 00:00:00 +0000</pubDate>
           <author>Arman Drismir</author>
-          <link>/projects/coco-miner/</link>
-          <guid>/projects/coco-miner/</guid>
-          <description xml:base="/projects/coco-miner/">&lt;p&gt;The PC I am using to run this webserver also happens to have a NVIDIA GTX 1060. I may as well see if I can mine crypto with it. My poor 1060 is not strong enough mine blocks, even on smaller coins, so I needed to find a mining pool for a coin that would not overwhelm my 3GB of VRAM. I found NEXA on f2pool which works perfectly!&lt;&#x2F;p&gt;
+          <link>/drafts/coco-miner/</link>
+          <guid>/drafts/coco-miner/</guid>
+          <description xml:base="/drafts/coco-miner/">&lt;p&gt;The PC I am using to run this webserver also happens to have a NVIDIA GTX 1060. I may as well see if I can mine crypto with it. My poor 1060 is not strong enough mine blocks, even on smaller coins, so I needed to find a mining pool for a coin that would not overwhelm my 3GB of VRAM. I found NEXA on f2pool which works perfectly!&lt;&#x2F;p&gt;
 &lt;p&gt;Using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Lolliedieb&#x2F;lolMiner-releases&quot;&gt;lolMiner&lt;&#x2F;a&gt; and an &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.f2pool.com&#x2F;&quot;&gt;f2pool&lt;&#x2F;a&gt; account I can start mining!&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;img src=&quot;&#x2F;projects&#x2F;coco-miner&#x2F;lolMiner.png&quot; alt=&quot;lolMiner terminal output&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;drafts&#x2F;coco-miner&#x2F;lolMiner.png&quot; alt=&quot;lolMiner terminal output&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;I cannot hope to make actual money from mining NEXA with a 1060 but I can hope to setup some nice analytics with prometheus and grafana.&lt;&#x2F;p&gt;
 &lt;p&gt;I am using lolMiner to mine NEXA which exposes a nice api for us. After some finagling with prometheus and grafana I was able to get some cool insights!&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;img src=&quot;&#x2F;projects&#x2F;coco-miner&#x2F;lol-miner-grafana.png&quot; alt=&quot;grafana statistics of lol miner’s progress&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;drafts&#x2F;coco-miner&#x2F;lol-miner-grafana.png&quot; alt=&quot;grafana statistics of lol miner’s progress&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;So I was a able to get 22 shares of the block in 15 minutes. If I leave it running for a whole day I can expect about 6500 NEXA. &lt;strong&gt;This equates to $0.007 USD a day.&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;At this rate if I mined NEXA coin for 391 389 years then I would be have a million US dollars! 🥳&lt;&#x2F;p&gt;
 &lt;p&gt;You can check out the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;coconut-mine.drismir.ca&#x2F;d&#x2F;de78xri7hrugwf&#x2F;coconut-mine?orgId=1&amp;amp;from=now-6h&amp;amp;to=now&amp;amp;timezone=browser&quot;&gt;live analytics&lt;&#x2F;a&gt; but it will likely be idle since mining NEXA coin makes my webserver unstable 😬&lt;&#x2F;p&gt;
@@ -228,9 +228,9 @@ As shown by the graph if more than five users submit a leaderboard time the syst
           <title>gpt-broker</title>
           <pubDate>Sat, 31 Aug 2024 00:00:00 +0000</pubDate>
           <author>Arman Drismir</author>
-          <link>/work/gpt-broker/</link>
-          <guid>/work/gpt-broker/</guid>
-          <description xml:base="/work/gpt-broker/">&lt;p&gt;SkillSync uses a lot of OpenAI API chat completions. We needed to:&lt;&#x2F;p&gt;
+          <link>/projects/gpt-broker/</link>
+          <guid>/projects/gpt-broker/</guid>
+          <description xml:base="/projects/gpt-broker/">&lt;p&gt;SkillSync uses a lot of OpenAI API chat completions. We needed to:&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;Keep API keys out of client side code&lt;&#x2F;li&gt;
 &lt;li&gt;Secure our ChatGPT endpoints to prevent someone from running up our bill maliciously 😵&lt;&#x2F;li&gt;
@@ -246,7 +246,7 @@ As shown by the graph if more than five users submit a leaderboard time the syst
 &lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;]
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;gpt-broker processes the quest like this:
-&lt;img src=&quot;&#x2F;work&#x2F;gpt-broker&#x2F;gpt-broker-process.png&quot; alt=&quot;graph of how gpt-broker handles a request&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;&#x2F;projects&#x2F;gpt-broker&#x2F;gpt-broker-process.png&quot; alt=&quot;graph of how gpt-broker handles a request&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;why-use-redis&quot;&gt;Why use Redis?&lt;&#x2F;h3&gt;
 &lt;p&gt;It might seem weird that we use Redis to track usage since Supabase is a database and we need to validate the access token with them anyway. At first I did use supabase to track usage but I found out I was wasting a lot of time waiting for the request to move to&#x2F;from supabase. With Redis we can run the cache locally and have almost no latency.&lt;&#x2F;p&gt;
 &lt;p&gt;Here is a breakdown of the time taken for a request with supabase&lt;&#x2F;p&gt;
@@ -270,14 +270,14 @@ As shown by the graph if more than five users submit a leaderboard time the syst
           <title>AgroBot Website</title>
           <pubDate>Thu, 22 Aug 2024 00:00:00 +0000</pubDate>
           <author>Arman Drismir</author>
-          <link>/work/agrobot-website/</link>
-          <guid>/work/agrobot-website/</guid>
-          <description xml:base="/work/agrobot-website/">&lt;p&gt;After eight busy months the WebDev team finally finished the UBC AgroBot website!
+          <link>/projects/agrobot-website/</link>
+          <guid>/projects/agrobot-website/</guid>
+          <description xml:base="/projects/agrobot-website/">&lt;p&gt;After eight busy months the WebDev team finally finished the UBC AgroBot website!
 &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;ubcagrobot.com&quot;&gt;ubcagrobot.com&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;The coolest part of the website is the 3d models of the robots we are buildings. You can even drag them around!&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;img src=&quot;&#x2F;work&#x2F;agrobot-website&#x2F;3d_model.png&quot; alt=&quot;3d model of agrobot&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;projects&#x2F;agrobot-website&#x2F;3d_model.png&quot; alt=&quot;3d model of agrobot&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;My favorite component is the recruitment timeline I made. I learned about some awful JavaScript Date related properties while making this.&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;img src=&quot;&#x2F;work&#x2F;agrobot-website&#x2F;timeline.png&quot; alt=&quot;UBC Agrobot recruitment timeline&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;projects&#x2F;agrobot-website&#x2F;timeline.png&quot; alt=&quot;UBC Agrobot recruitment timeline&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;We still need to come up with an actual hosting solution and we need to develop something the marketing team can use to publish new articles. Overall I am very happy with how the website turned out, it feels good to finally publish 😮‍💨.&lt;&#x2F;p&gt;
 </description>
       </item>

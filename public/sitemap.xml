@@ -8,6 +8,10 @@
         <lastmod>2024-07-20</lastmod>
     </url>
     <url>
+        <loc>/drafts/coco-miner/</loc>
+        <lastmod>2024-12-05</lastmod>
+    </url>
+    <url>
         <loc>/drafts/linkedin-scraper/</loc>
         <lastmod>2024-01-20</lastmod>
     </url>
@@ -19,8 +23,8 @@
         <loc>/projects/</loc>
     </url>
     <url>
-        <loc>/projects/coco-miner/</loc>
-        <lastmod>2024-12-05</lastmod>
+        <loc>/projects/agrobot-website/</loc>
+        <lastmod>2024-08-22</lastmod>
     </url>
     <url>
         <loc>/projects/cpp-chess-engine/</loc>
@@ -33,6 +37,10 @@
     <url>
         <loc>/projects/dino-match/</loc>
         <lastmod>2024-07-27</lastmod>
+    </url>
+    <url>
+        <loc>/projects/gpt-broker/</loc>
+        <lastmod>2024-08-31</lastmod>
     </url>
     <url>
         <loc>/projects/med-ethics/</loc>
@@ -134,16 +142,5 @@
     </url>
     <url>
         <loc>/tags/web-scraping/</loc>
-    </url>
-    <url>
-        <loc>/work/</loc>
-    </url>
-    <url>
-        <loc>/work/agrobot-website/</loc>
-        <lastmod>2024-08-22</lastmod>
-    </url>
-    <url>
-        <loc>/work/gpt-broker/</loc>
-        <lastmod>2024-08-31</lastmod>
     </url>
 </urlset>

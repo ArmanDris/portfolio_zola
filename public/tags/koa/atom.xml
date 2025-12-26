@@ -18,10 +18,10 @@
           </name>
         </author>
         
-        <link rel="alternate" type="text/html" href="/work/gpt-broker/"/>
-        <id>/work/gpt-broker/</id>
+        <link rel="alternate" type="text/html" href="/projects/gpt-broker/"/>
+        <id>/projects/gpt-broker/</id>
         
-        <content type="html" xml:base="/work/gpt-broker/">&lt;p&gt;SkillSync uses a lot of OpenAI API chat completions. We needed to:&lt;&#x2F;p&gt;
+        <content type="html" xml:base="/projects/gpt-broker/">&lt;p&gt;SkillSync uses a lot of OpenAI API chat completions. We needed to:&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;Keep API keys out of client side code&lt;&#x2F;li&gt;
 &lt;li&gt;Secure our ChatGPT endpoints to prevent someone from running up our bill maliciously 😵&lt;&#x2F;li&gt;
@@ -37,7 +37,7 @@
 &lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;]
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;gpt-broker processes the quest like this:
-&lt;img src=&quot;&#x2F;work&#x2F;gpt-broker&#x2F;gpt-broker-process.png&quot; alt=&quot;graph of how gpt-broker handles a request&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;&#x2F;projects&#x2F;gpt-broker&#x2F;gpt-broker-process.png&quot; alt=&quot;graph of how gpt-broker handles a request&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;why-use-redis&quot;&gt;Why use Redis?&lt;&#x2F;h3&gt;
 &lt;p&gt;It might seem weird that we use Redis to track usage since Supabase is a database and we need to validate the access token with them anyway. At first I did use supabase to track usage but I found out I was wasting a lot of time waiting for the request to move to&#x2F;from supabase. With Redis we can run the cache locally and have almost no latency.&lt;&#x2F;p&gt;
 &lt;p&gt;Here is a breakdown of the time taken for a request with supabase&lt;&#x2F;p&gt;

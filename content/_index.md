@@ -14,21 +14,16 @@ title = "Home"
 {% end %}
 <br/>
 <p>
-Hello!
+Hello! I like algorithms and the web. Right now I am really getting pulled into the BEAM ecosystem via erlang and elixir.
 </p>
 <p>
 You can read about the projects I get up to on my <a href="/projects">projects page</a>.  
 I would recommend my <a href="/projects/cpp-chess-engine/">chess engine writeup</a>!  
 </p>
-<p>
-On the work side of things, my fav is <b>gpt-broker</b>, a microservice that manages an organization's third party API's. I wrote a small writeup, you can find it <a href="/work/gpt-broker">here</a>, it's github repo is <a href="https://github.com/ArmanDris/gpt-broker" target="_blank">here</a>.
-</p>
 <br/>
 <p>
 I love hosting my projects. These ones are online right now:
 </p>
-<b>coconut-mine</b> minute by minute stats on the old pc i am using to mine NEXA coin<br/>(<a href="https://coconut-mine.drismir.ca/d/de78xri7hrugwf/coco-min?&kiosk" target="_blank">live website</a>)
-
 <b>Dino Match</b> reverse image search using an image vectorizer function and vector similarity search function<br/>
 (<a href="https://dinomatch.drismir.ca" target="_blank">live website</a>) (<a href="https://github.com/ArmanDris/Dinomatch" target="_blank">github repo</a>)
 

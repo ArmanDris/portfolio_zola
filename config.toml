@@ -106,7 +106,6 @@ show_repo = false
 # i.e. "@/blog/_index.md".
 # See https://www.getzola.org/documentation/content/linking/#internal-links
 links = [
-	{ url = "@/work/_index.md", name = "Work" },
 	{ url = "@/projects/_index.md", name = "Projects"},
 ]
 
@@ -115,7 +114,6 @@ links = [
 # Same as the nav ones.
 links = [
 	{ url = "@/_index.md", name = "Home" },
-	{ url = "@/work/_index.md", name = "Work" },
 	{ url = "@/projects/_index.md", name = "Projects"},
 ]
 # Social links in the footer.
