@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Arman - CSS</title>
+      <link>/</link>
+      <description>Hello!</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="/tags/css/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Thu, 05 Dec 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Medical Ethics Sudoku Incident Report</title>
+          <pubDate>Thu, 05 Dec 2024 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/projects/med-ethics/</link>
+          <guid>/projects/med-ethics/</guid>
+          <description xml:base="/projects/med-ethics/">&lt;h3 id=&quot;the-malfunction&quot;&gt;The malfunction&lt;&#x2F;h3&gt;
+&lt;p&gt;On december 6th the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;med-ethics.drismir.ca&quot;&gt;UBC Medical Ethics&lt;&#x2F;a&gt; club website had a
+catastrophic UI failure.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;projects&#x2F;med-ethics&#x2F;ui_fail.png&quot; alt=&quot;ui_failure&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;As you can see the the leaderboard header is obscured by the beaker png. The leaderboard header and
+beaker png are both performance critical, I needed to quickly resolve this conflict before
+our malfunctioning UI caused undue stress for our users.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;the-solution&quot;&gt;The solution&lt;&#x2F;h3&gt;
+&lt;p&gt;Fortunately me and @ny4h1c were able to engineer an elegant and maintainable solution.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;projects&#x2F;med-ethics&#x2F;ui_fix.png&quot; alt=&quot;ui_fix&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;As you can see we managed to keep both the leaderboard header and beaker png online with
+minimal disruption to our loyal users. This was achieved with the following CSS rules:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;css&quot; class=&quot;language-css z-code&quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-selector z-css&quot;&gt;&lt;span class=&quot;z-entity z-other z-attribute-name z-id z-css&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-entity z-css&quot;&gt;#&lt;&#x2F;span&gt;greeting&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-property-list z-css&quot;&gt;{&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;    &lt;span class=&quot;z-meta z-property-name z-css&quot;&gt;&lt;span class=&quot;z-support z-type z-property-name z-css&quot;&gt;z-index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-key-value z-css&quot;&gt;:&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-value z-css&quot;&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-value z-css&quot;&gt;&lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-css&quot;&gt;20&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-terminator z-rule z-css&quot;&gt;;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;    &lt;span class=&quot;z-comment z-block z-css&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-css&quot;&gt;&#x2F;*&lt;&#x2F;span&gt; ... &lt;span class=&quot;z-punctuation z-definition z-comment z-css&quot;&gt;*&#x2F;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-property-list z-css&quot;&gt;}&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-selector z-css&quot;&gt;&lt;span class=&quot;z-entity z-other z-attribute-name z-id z-css&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-entity z-css&quot;&gt;#&lt;&#x2F;span&gt;beaker-img&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-property-list z-css&quot;&gt;{&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;    &lt;span class=&quot;z-comment z-block z-css&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-css&quot;&gt;&#x2F;*&lt;&#x2F;span&gt; ... &lt;span class=&quot;z-punctuation z-definition z-comment z-css&quot;&gt;*&#x2F;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;    &lt;span class=&quot;z-meta z-property-name z-css&quot;&gt;&lt;span class=&quot;z-support z-type z-property-name z-css&quot;&gt;z-index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-key-value z-css&quot;&gt;:&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-value z-css&quot;&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-value z-css&quot;&gt;&lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-css&quot;&gt;1&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-terminator z-rule z-css&quot;&gt;;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-property-list z-css&quot;&gt;}&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-selector z-css&quot;&gt;&lt;span class=&quot;z-entity z-other z-attribute-name z-id z-css&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-entity z-css&quot;&gt;#&lt;&#x2F;span&gt;leaderboard&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-property-list z-css&quot;&gt;{&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;    &lt;span class=&quot;z-comment z-block z-css&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-css&quot;&gt;&#x2F;*&lt;&#x2F;span&gt; ... &lt;span class=&quot;z-punctuation z-definition z-comment z-css&quot;&gt;*&#x2F;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;    &lt;span class=&quot;z-meta z-property-name z-css&quot;&gt;&lt;span class=&quot;z-support z-type z-property-name z-css&quot;&gt;background&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-key-value z-css&quot;&gt;:&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-value z-css&quot;&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-value z-css&quot;&gt;&lt;span class=&quot;z-constant z-other z-color z-rgba-value z-css&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-constant z-css&quot;&gt;#&lt;&#x2F;span&gt;27241d91&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-terminator z-rule z-css&quot;&gt;;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;    &lt;span class=&quot;z-meta z-property-name z-css&quot;&gt;&lt;span class=&quot;z-support z-type z-property-name z-css&quot;&gt;z-index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-key-value z-css&quot;&gt;:&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-value z-css&quot;&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-property-value z-css&quot;&gt;&lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-css&quot;&gt;5&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-terminator z-rule z-css&quot;&gt;;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;&lt;span class=&quot;z-meta z-property-list z-css&quot;&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-property-list z-css&quot;&gt;}&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;investigation&quot;&gt;Investigation&lt;&#x2F;h3&gt;
+&lt;p&gt;After a thorough investigation with our site reliability team we discovered that the error occured because more users completed the mini game than we anticipated.
+As shown by the graph if more than five users submit a leaderboard time the system is completely overwhelmed and the visibility of the leaderboard header drops to zero.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;projects&#x2F;med-ethics&#x2F;leaderboard_visibility.png&quot; alt=&quot;UI Graph&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+</description>
+      </item>
+    </channel>
+</rss>
