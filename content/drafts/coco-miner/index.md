@@ -23,4 +23,4 @@ So I was a able to get 22 shares of the block in 15 minutes. If I leave it runni
 
 At this rate if I mined NEXA coin for 391 389 years then I would be have a million US dollars! 🥳
 
-You can check out the [live analytics](https://coconut-mine.drismir.ca/d/de78xri7hrugwf/coconut-mine?orgId=1&from=now-6h&to=now&timezone=browser) but it will likely be idle since mining NEXA coin makes my webserver unstable 😬
+<!-- You can check out the [live analytics](https://coconut-mine.drismir.ca/d/de78xri7hrugwf/coconut-mine?orgId=1&from=now-6h&to=now&timezone=browser) but it will likely be idle since mining NEXA coin makes my webserver unstable 😬 -->

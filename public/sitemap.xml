@@ -31,6 +31,10 @@
         <lastmod>2023-07-30</lastmod>
     </url>
     <url>
+        <loc>/projects/dancing-links-sudoku/</loc>
+        <lastmod>2026-07-07</lastmod>
+    </url>
+    <url>
         <loc>/projects/default-detector/</loc>
         <lastmod>2024-06-01</lastmod>
     </url>
@@ -43,12 +47,16 @@
         <lastmod>2024-08-31</lastmod>
     </url>
     <url>
+        <loc>/projects/leet-code-permutation-sequence/</loc>
+        <lastmod>2026-03-01</lastmod>
+    </url>
+    <url>
         <loc>/projects/med-ethics/</loc>
         <lastmod>2024-12-05</lastmod>
     </url>
     <url>
         <loc>/projects/parallel-reduce-gleam/</loc>
-        <lastmod>2025-03-05</lastmod>
+        <lastmod>2026-07-06</lastmod>
     </url>
     <url>
         <loc>/tags/</loc>
@@ -75,6 +83,9 @@
         <loc>/tags/css/</loc>
     </url>
     <url>
+        <loc>/tags/dancing-links/</loc>
+    </url>
+    <url>
         <loc>/tags/docker/</loc>
     </url>
     <url>
@@ -94,6 +105,9 @@
     </url>
     <url>
         <loc>/tags/koa/</loc>
+    </url>
+    <url>
+        <loc>/tags/leet-code/</loc>
     </url>
     <url>
         <loc>/tags/machine-learning/</loc>
@@ -117,10 +131,16 @@
         <loc>/tags/redis/</loc>
     </url>
     <url>
+        <loc>/tags/rust/</loc>
+    </url>
+    <url>
         <loc>/tags/scikit-learn/</loc>
     </url>
     <url>
         <loc>/tags/sfml/</loc>
+    </url>
+    <url>
+        <loc>/tags/sudoku/</loc>
     </url>
     <url>
         <loc>/tags/supabase/</loc>

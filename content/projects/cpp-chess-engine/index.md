@@ -268,7 +268,7 @@ documentation. I had heard of all three before but I never really understood why
 A big reason this made me feel like a real programmer was because I was constantly interacting with by 
 own past design decisions. The utility of abstractions and classes was hard for me to accept. 
 As a project grows large enough abstractions become necessary and obvious, when I made that 
-realization I could understand why code I was reding across the board was designed the way it was.
+realization I could understand why code I was reading across the board was designed the way it was.
 
 Designing a chess engine is an amazing experience. Even a year later I still get the urge 
 to come back and test out potential improvements.

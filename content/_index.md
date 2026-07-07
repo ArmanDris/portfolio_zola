@@ -17,12 +17,18 @@ title = "Home"
 Hello and welcome to my website!
 </p>
 <p>
-I like to build <i>lean</i>, <i>simple</i>, and nice <i>feeling</i> software.
-</p>
-Right now I am knee deep in the BEAM ecosystem via Erlang, Elixir, and Gleam. My most recent project is a Gleam web app that tracks the NFL Schedule without spoiling the result of any games. <a href="https://no-spoil-alert.drismir.ca" target="_blank">You shoud check it out here</a>!
+Right now I am knee deep in the BEAM ecosystem via Erlang, Elixir, and Gleam. My most recent project is a Gleam web app that tracks the NFL Schedule without spoiling the result of any games. It is not online during the NFL off season though 😔.
 </p>
 <p>
-You can read about the projects I get up to on my <a href="/projects">projects page</a>.  
-I would recommend my <a href="/projects/cpp-chess-engine/">chess engine writeup</a>!  
+  You can read about the projects I get up to on my <a href="/projects">projects page</a>. These are my two favorites:
+  <ol style="font-size: 20px; line-height: 3rem">
+    <li>
+      <img src="/cpp.webp" style="display: inline; margin: 0; margin-bottom: -4px; margin-left: 4px; margin-right: 4px; width: 24px; border-radius: 0;"/>
+      <a href="/projects/cpp-chess-engine/">Chess Engine</a>
+    </li>
+    <li>
+      <img src="/rs.webp" style="display: inline; margin: 0; margin-bottom: -4px; margin-left: 4px; margin-right: 4px; width: 24px; border-radius: 0;"/>
+      <a href="/projects/dancing-links-sudoku/"> Generating Sudoku Boards as Efficiently as Possible</a>
+    </li>
+  </ol>
 </p>
-<p>

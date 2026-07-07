@@ -1,177 +1,112 @@
 +++
 authors = ["Arman Drismir"]
-title = "Parallel computing with Gleam!"
-description = "Using gleam's Erlang features to parallelize a reduce function"
-date = 2025-03-05
+title = "Parallelizing the Scan function with Gleam!"
+description = "By breaking the problem into a tree, we can scan in O(log n)"
+date = 2026-07-06
 [taxonomies]
 tags = ["Gleam", "Erlang", "Parallel Computing"]
 [extra]
-disclaimer = "This is still a work in progress so the data is a little messy in some places"
 +++
 
-## Reduce Overview
+## Scan Overview
 
-The goal is to write a `parallel_reduce` function that will use a `combine_fn` to aggregate a list.
+Scan computes the running total of a list. Eg. for the list `[2, 1, 10, 3]`, the
+running total would be `[0, 2, 3, 13]`. On first glance it is not at all obvious
+how this can be done in parallel. For example if we wanted to compute just the
+last two indexes in their own thread to save time: `[10, 3]`, we would be stuck
+because we need to know the sum of everything that came before to return the
+result. Of course waiting for the sum of everything that came before ruins the
+benefit of multithreading in the first place.
 
-Parallel reduce should be able to spawn an appropriate number of threads to aggregate the entire list in **O(log n)** time! Parallel reduce should also be able to run much faster than `sequential_reduce` for n around 1_000_000. So in other words, it's runtime must also have a small constant factor.
 
-Here is an example of using `parallel_reduce` to sum a list:
+The key to parellizing this is with a clever trick. Note that the `fold` or
+`reduce` function is easily parallelizable. If we want to calculate the `reduce`
+of `[1, 2, 3, ..., 100]` we can just spawn 5 threads, give each thread 20 elements
+and boom we can compute it in `log(n)` time.
+
+
+The clever trick for parallelizing scan is to first run a `reduce` on the list in
+`log(n)` time. As we reduce we will pass around the sum of each list segment in
+such a way that all segments will receive their sum of previous elements in at
+worst `log(n)` time. We can then run the scan parallelly in `log(n)` time, resulting
+in a total runtime of `2 log(n) + λ` (where λ is the cost of sending data across threads).
+
+
+## Visualization of process tree
+
+For an understanding of exactly how we need to pass around the data to achieve this runtime
+look at this visualization for scanning the list `[8, 4, 9, 12, 1, 73, 4, 90]`:
+
+
+Step #1: Spawn a tree of processes
+<img src="/par-scan-img-0.1.png" />
+
+Step #2: Run reduce on the leaf nodes, and send result to parent node
+<img src="/par-scan-img-1.png" />
+
+Step #3: In each parent node, store results of children, then sum them and send to parent
+<img src="/par-scan-img-2.png" />
+
+Step #4: Repeat for root node. Store results of children then sum them. Because this is the root node,
+instead of sending the sum up, we will begin the downward pass.
+<img src="/par-scan-img-3.png" />
+
+Step #5: Once the top of the tree has been reached, the root node gives its right child
+the sum of the left half of the tree.
+<img src="/par-scan-img-4.png" />
+
+Step #6: Now each intermediate node has all the information required to give its
+children the sum of everything to the left.
+<img src="/par-scan-img-5.png" />
+
+Step #7: Each leaf node uses its sum to calculate its portion of the scan.
+<img src="/par-scan-img-6.png" />
+
+Step #8: The results of each child's scan is bubbled up the tree and the parent node
+combines the results.
+<img src="/par-scan-img-7.png" />
+
+Step #9: The root combines the two halves of the scan results, and we are left
+with the final result!
+<img src="/par-scan-img-8.png" />
+
+
+## Implementation in Gleam
+
+
+(For the full code <a href="https://github.com/ArmanDris/star_scan">check out the repo</a>)
+
+
+## Results
+
+Using an expensive combination function we can add up 500 elements faster than sequential!
+
 ```gleam
-parallel_reduce([40, -200, 600, 5], fn(a, b) { a + b })
-// Returns -> 445
+star_scan % gleam run
+Sequential scan done in 5501 ms
+Parallel scan done in 1007 ms
 ```
-Another example with multiplication
+
+Note however, this was using this artificially expensive addition function:
 ```gleam
-parallel_reduce([40, -200, 600, 5], fn(a, b) { a * b })
-// Returns -> -24000000
+let expensive_combine_fn = fn(a, b) {
+  process.sleep(10)
+  int.add(a, b)
+}
 ```
 
+What happens if we use the regular addition function?
 
-## First attempt
-
-Running the parallel algorithm on a list with **100_000_000** numbers we should be able to blow the sequential implementation out of the water. So lets try it!
-
-```sh
-gleam run
-   Compiled in 0.35s
-    Running star_scan.main
-Sequential time taken 626 ms
-Par time taken 9876 ms
-```
-
-Oh dear, that is dreadful, our multithreaded solution is 15 times slower than the naive single threaded solution 😭.
-
-#### Why is it so bad?
-
-Our algorithm spawns 10_000 threads that each calculate the total of 10_000 numbers. To make this easy I have a function that evenly divides the 100_000_000 into equally sized pieces for each of our threads. Lets find out how long splitting up our input takes.
-
-```sh
-gleam run
-   Compiled in 0.05s
-    Running star_scan.main
-Split lists in 8635 ms
-```
-
-Splitting our list up for our processes takes way longer than the actual operation would have.
-
-### Why is splitting a list so expensive?
-
-Our split list function is essentially a recursive call to the built in split function:
 ```gleam
-let #(new_part, rest) = list.split(list, partition_size)
-```
-Gleam represents lists as linked lists under the hood so each call to list_split is O(n). We call `split_list` $sqrt(n)$ times so we will spend $O(n sqrt(n) )$ on splitting the lists alone!
-
-### How can we make it fast?
-
-To make it truly fast we need to stop thinking so sequentially and allow the processes to divide up the work themselves. This will also fit nicely into our desire for **O(log n)** performance.
-
-More specifically we should create a tree, where each process divides itself in two until it has a list of length m. When it has a list of length m then it will perform sequential reduce on its segment m of the list and combine with its twin before sending its result to its parent. Then we can divide the list in **O(log n)** time and reduce in **O(log n)** time, achieving the nice runtime we want!
-
-### Second attempt
-
-With our new strategy lets try with a list of 100_000_000 numbers and a process segment size of 1_000_000.
-
-```sh
-gleam run 
-   Compiled in 0.28s
-    Running star_scan.main
-Reduce time taken 633 ms
-Par time taken 4982 ms
+star_scan % gleam run
+Sequential scan done in 0 ms
+Parallel scan done in 7 ms
 ```
 
-Trying with a list of 100_000_000 numbers and a process segment size of 10_000.
+Our parallel function gets destroyed X_X. This is an important limitation of
+this parallel implementation. We incur a lot of overhead constructing the tree
+and passing values around. This will only ever save time in cases where the
+combine function is very expensive.
 
-```sh
-gleam run
-   Compiled in 0.29s
-    Running star_scan.main
-Reduce time taken 763 ms
-Par time taken 5229 ms
-```
-
-Trying with a list of 100_000_000 numbers and a process segment size of 100.
-
-```sh
-gleam run
-   Compiled in 0.29s
-    Running star_scan.main
-Reduce time taken 691 ms
-Par time taken 4412 ms
-```
-
-After running a few times and averaging it out, segment size of 1_000_000, 10_000, and 100 do not have much of an impact. I suspect that reduce with addition is so simple that the overhead of parallelization will always dominate the runtime in testing.
-
-With 100_000_000 numbers, a combine fn of `let combine_fn = fn(a, b) { a * b / a / a / a }`, and a segment size of 100_000 it gets a lot closer.
-
-```sh
-gleam run
-  Compiling star_scan
-   Compiled in 0.21s
-    Running star_scan.main
-Reduce time taken 1666 ms
-Par time taken 4825 ms
-```
-
-**Integrate this somehow**
-
-If we provide a more expensive combine fn then we can actually get some nice results with par reduce :D
-
-```sh
-gleam run
-Reduce time taken 9272 ms
-Hybrid time taken 3626 ms
-```
-
-```sh
-gleam run
-Reduce time taken 9520 ms
-Hybrid time taken 3856 ms
-```
-
-```sh
-gleam run
-Reduce time taken 9520 ms
-Hybrid time taken 3856 ms
-```
-
-```sh
-gleam run
-Reduce time taken 9955 ms
-Hybrid time taken 4617 ms
-```
-
-```sh
-gleam run
-Reduce time taken 9691 ms
-Hybrid time taken 4439 ms
-```
-
-Wonderful! We are saving time :D
-
-## Scan overview
-
-Scan provides a running total of a list. Using some clever message passing we can parallelize this. 
-
-Example using addition:
-```gleam
-parallel_scan([40, -200, 600, 5], fn(a, b) { a + b })
-// Returns -> [40, -160, 440, 445]
-```
-
-Another example with multiplication
-```gleam
-parallel_scan([40, -200, 600, 5], fn(a, b) { a * b })
-// Returns -> [40, -8000, -480000, -2400000]
-```
-
-## Random notes:
-
-Gleam's built in fold is implemented sequentially and not optimized. It is the same as my simple custom implementation 
-
-```sh
-src % gleam run
-Built in foldl time taken 10818 ms
-Reduce time taken 10959 ms
-Hybrid time taken 5114 ms
-```
+When the combine function is expensive however, this function can give some very
+nice runtimes :)

@@ -7,120 +7,81 @@
       <generator>Zola</generator>
       <language>en</language>
       <atom:link href="/tags/gleam/rss.xml" rel="self" type="application/rss+xml"/>
-      <lastBuildDate>Wed, 05 Mar 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 06 Jul 2026 00:00:00 +0000</lastBuildDate>
       <item>
-          <title>Parallel computing with Gleam!</title>
-          <pubDate>Wed, 05 Mar 2025 00:00:00 +0000</pubDate>
+          <title>Parallelizing the Scan function with Gleam!</title>
+          <pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
           <author>Arman Drismir</author>
           <link>/projects/parallel-reduce-gleam/</link>
           <guid>/projects/parallel-reduce-gleam/</guid>
-          <description xml:base="/projects/parallel-reduce-gleam/">&lt;h2 id=&quot;reduce-overview&quot;&gt;Reduce Overview&lt;&#x2F;h2&gt;
-&lt;p&gt;The goal is to write a &lt;code&gt;parallel_reduce&lt;&#x2F;code&gt; function that will use a &lt;code&gt;combine_fn&lt;&#x2F;code&gt; to aggregate a list.&lt;&#x2F;p&gt;
-&lt;p&gt;Parallel reduce should be able to spawn an appropriate number of threads to aggregate the entire list in &lt;strong&gt;O(log n)&lt;&#x2F;strong&gt; time! Parallel reduce should also be able to run much faster than &lt;code&gt;sequential_reduce&lt;&#x2F;code&gt; for n around 1_000_000. So in other words, it’s runtime must also have a small constant factor.&lt;&#x2F;p&gt;
-&lt;p&gt;Here is an example of using &lt;code&gt;parallel_reduce&lt;&#x2F;code&gt; to sum a list:&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;parallel_reduce([40, -200, 600, 5], fn(a, b) { a + b })
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&#x2F;&#x2F; Returns -&amp;gt; 445
+          <description xml:base="/projects/parallel-reduce-gleam/">&lt;h2 id=&quot;scan-overview&quot;&gt;Scan Overview&lt;&#x2F;h2&gt;
+&lt;p&gt;Scan computes the running total of a list. Eg. for the list &lt;code&gt;[2, 1, 10, 3]&lt;&#x2F;code&gt;, the
+running total would be &lt;code&gt;[0, 2, 3, 13]&lt;&#x2F;code&gt;. On first glance it is not at all obvious
+how this can be done in parallel. For example if we wanted to compute just the
+last two indexes in their own thread to save time: &lt;code&gt;[10, 3]&lt;&#x2F;code&gt;, we would be stuck
+because we need to know the sum of everything that came before to return the
+result. Of course waiting for the sum of everything that came before ruins the
+benefit of multithreading in the first place.&lt;&#x2F;p&gt;
+&lt;p&gt;The key to parellizing this is with a clever trick. Note that the &lt;code&gt;fold&lt;&#x2F;code&gt; or
+&lt;code&gt;reduce&lt;&#x2F;code&gt; function is easily parallelizable. If we want to calculate the &lt;code&gt;reduce&lt;&#x2F;code&gt;
+of &lt;code&gt;[1, 2, 3, ..., 100]&lt;&#x2F;code&gt; we can just spawn 5 threads, give each thread 20 elements
+and boom we can compute it in &lt;code&gt;log(n)&lt;&#x2F;code&gt; time.&lt;&#x2F;p&gt;
+&lt;p&gt;The clever trick for parallelizing scan is to first run a &lt;code&gt;reduce&lt;&#x2F;code&gt; on the list in
+&lt;code&gt;log(n)&lt;&#x2F;code&gt; time. As we reduce we will pass around the sum of each list segment in
+such a way that all segments will receive their sum of previous elements in at
+worst &lt;code&gt;log(n)&lt;&#x2F;code&gt; time. We can then run the scan parallelly in &lt;code&gt;log(n)&lt;&#x2F;code&gt; time, resulting
+in a total runtime of &lt;code&gt;2 log(n) + λ&lt;&#x2F;code&gt; (where λ is the cost of sending data across threads).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;visualization-of-process-tree&quot;&gt;Visualization of process tree&lt;&#x2F;h2&gt;
+&lt;p&gt;For an understanding of exactly how we need to pass around the data to achieve this runtime
+look at this visualization for scanning the list &lt;code&gt;[8, 4, 9, 12, 1, 73, 4, 90]&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;p&gt;Step #1: Spawn a tree of processes
+&lt;img src=&quot;&#x2F;par-scan-img-0.1.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #2: Run reduce on the leaf nodes, and send result to parent node
+&lt;img src=&quot;&#x2F;par-scan-img-1.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #3: In each parent node, store results of children, then sum them and send to parent
+&lt;img src=&quot;&#x2F;par-scan-img-2.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #4: Repeat for root node. Store results of children then sum them. Because this is the root node,
+instead of sending the sum up, we will begin the downward pass.
+&lt;img src=&quot;&#x2F;par-scan-img-3.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #5: Once the top of the tree has been reached, the root node gives its right child
+the sum of the left half of the tree.
+&lt;img src=&quot;&#x2F;par-scan-img-4.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #6: Now each intermediate node has all the information required to give its
+children the sum of everything to the left.
+&lt;img src=&quot;&#x2F;par-scan-img-5.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #7: Each leaf node uses its sum to calculate its portion of the scan.
+&lt;img src=&quot;&#x2F;par-scan-img-6.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #8: The results of each child’s scan is bubbled up the tree and the parent node
+combines the results.
+&lt;img src=&quot;&#x2F;par-scan-img-7.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #9: The root combines the two halves of the scan results, and we are left
+with the final result!
+&lt;img src=&quot;&#x2F;par-scan-img-8.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;implementation-in-gleam&quot;&gt;Implementation in Gleam&lt;&#x2F;h2&gt;
+&lt;p&gt;(For the full code &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ArmanDris&#x2F;star_scan&quot;&gt;check out the repo&lt;&#x2F;a&gt;)&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;results&quot;&gt;Results&lt;&#x2F;h2&gt;
+&lt;p&gt;Using an expensive combination function we can add up 500 elements faster than sequential!&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;star_scan % gleam run
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Sequential scan done in 5501 ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Parallel scan done in 1007 ms
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Another example with multiplication&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;parallel_reduce([40, -200, 600, 5], fn(a, b) { a * b })
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&#x2F;&#x2F; Returns -&amp;gt; -24000000
+&lt;p&gt;Note however, this was using this artificially expensive addition function:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;let expensive_combine_fn = fn(a, b) {
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  process.sleep(10)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  int.add(a, b)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;h2 id=&quot;first-attempt&quot;&gt;First attempt&lt;&#x2F;h2&gt;
-&lt;p&gt;Running the parallel algorithm on a list with &lt;strong&gt;100_000_000&lt;&#x2F;strong&gt; numbers we should be able to blow the sequential implementation out of the water. So lets try it!&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.35s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Sequential&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 626 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Par&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9876 ms&lt;&#x2F;span&gt;
+&lt;p&gt;What happens if we use the regular addition function?&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;star_scan % gleam run
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Sequential scan done in 0 ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Parallel scan done in 7 ms
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Oh dear, that is dreadful, our multithreaded solution is 15 times slower than the naive single threaded solution 😭.&lt;&#x2F;p&gt;
-&lt;h4 id=&quot;why-is-it-so-bad&quot;&gt;Why is it so bad?&lt;&#x2F;h4&gt;
-&lt;p&gt;Our algorithm spawns 10_000 threads that each calculate the total of 10_000 numbers. To make this easy I have a function that evenly divides the 100_000_000 into equally sized pieces for each of our threads. Lets find out how long splitting up our input takes.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.05s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Split&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; lists in 8635 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Splitting our list up for our processes takes way longer than the actual operation would have.&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;why-is-splitting-a-list-so-expensive&quot;&gt;Why is splitting a list so expensive?&lt;&#x2F;h3&gt;
-&lt;p&gt;Our split list function is essentially a recursive call to the built in split function:&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;let #(new_part, rest) = list.split(list, partition_size)
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Gleam represents lists as linked lists under the hood so each call to list_split is O(n). We call &lt;code&gt;split_list&lt;&#x2F;code&gt; $sqrt(n)$ times so we will spend $O(n sqrt(n) )$ on splitting the lists alone!&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;how-can-we-make-it-fast&quot;&gt;How can we make it fast?&lt;&#x2F;h3&gt;
-&lt;p&gt;To make it truly fast we need to stop thinking so sequentially and allow the processes to divide up the work themselves. This will also fit nicely into our desire for &lt;strong&gt;O(log n)&lt;&#x2F;strong&gt; performance.&lt;&#x2F;p&gt;
-&lt;p&gt;More specifically we should create a tree, where each process divides itself in two until it has a list of length m. When it has a list of length m then it will perform sequential reduce on its segment m of the list and combine with its twin before sending its result to its parent. Then we can divide the list in &lt;strong&gt;O(log n)&lt;&#x2F;strong&gt; time and reduce in &lt;strong&gt;O(log n)&lt;&#x2F;strong&gt; time, achieving the nice runtime we want!&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;second-attempt&quot;&gt;Second attempt&lt;&#x2F;h3&gt;
-&lt;p&gt;With our new strategy lets try with a list of 100_000_000 numbers and a process segment size of 1_000_000.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run &lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.28s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 633 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Par&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 4982 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Trying with a list of 100_000_000 numbers and a process segment size of 10_000.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.29s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 763 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Par&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 5229 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Trying with a list of 100_000_000 numbers and a process segment size of 100.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.29s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 691 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Par&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 4412 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;After running a few times and averaging it out, segment size of 1_000_000, 10_000, and 100 do not have much of an impact. I suspect that reduce with addition is so simple that the overhead of parallelization will always dominate the runtime in testing.&lt;&#x2F;p&gt;
-&lt;p&gt;With 100_000_000 numbers, a combine fn of &lt;code&gt;let combine_fn = fn(a, b) { a * b &#x2F; a &#x2F; a &#x2F; a }&lt;&#x2F;code&gt;, and a segment size of 100_000 it gets a lot closer.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiling&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.21s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 1666 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Par&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 4825 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;&lt;strong&gt;Integrate this somehow&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;If we provide a more expensive combine fn then we can actually get some nice results with par reduce :D&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9272 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 3626 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9520 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 3856 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9520 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 3856 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9955 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 4617 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9691 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 4439 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Wonderful! We are saving time :D&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;scan-overview&quot;&gt;Scan overview&lt;&#x2F;h2&gt;
-&lt;p&gt;Scan provides a running total of a list. Using some clever message passing we can parallelize this.&lt;&#x2F;p&gt;
-&lt;p&gt;Example using addition:&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;parallel_scan([40, -200, 600, 5], fn(a, b) { a + b })
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&#x2F;&#x2F; Returns -&amp;gt; [40, -160, 440, 445]
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Another example with multiplication&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;parallel_scan([40, -200, 600, 5], fn(a, b) { a * b })
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&#x2F;&#x2F; Returns -&amp;gt; [40, -8000, -480000, -2400000]
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;h2 id=&quot;random-notes&quot;&gt;Random notes:&lt;&#x2F;h2&gt;
-&lt;p&gt;Gleam’s built in fold is implemented sequentially and not optimized. It is the same as my simple custom implementation&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;src&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; &lt;span class=&quot;z-meta z-group z-expansion z-job z-shell&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-variable z-job z-shell&quot;&gt;%&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; gleam run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Built&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in foldl time taken 10818 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 10959 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 5114 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Our parallel function gets destroyed X_X. This is an important limitation of
+this parallel implementation. We incur a lot of overhead constructing the tree
+and passing values around. This will only ever save time in cases where the
+combine function is very expensive.&lt;&#x2F;p&gt;
+&lt;p&gt;When the combine function is expensive however, this function can give some very
+nice runtimes :)&lt;&#x2F;p&gt;
 </description>
       </item>
     </channel>

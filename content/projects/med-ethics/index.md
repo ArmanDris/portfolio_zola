@@ -50,7 +50,7 @@ minimal disruption to our loyal users. This was achieved with the following CSS 
 
 ### Investigation
 
-After a thorough investigation with our site reliability team we discovered that the error occured because more users completed the mini game than we anticipated. 
+After a thorough investigation with our site reliability team we discovered that the error occurred because more users completed the mini game than we anticipated. 
 As shown by the graph if more than five users submit a leaderboard time the system is completely overwhelmed and the visibility of the leaderboard header drops to zero.
 
 ![UI Graph](leaderboard_visibility.png)

@@ -5,12 +5,145 @@
     <link rel="self" type="application/atom+xml" href="/atom.xml"/>
     <link rel="alternate" type="text/html" href="/"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-03-05T00:00:00+00:00</updated>
+    <updated>2026-07-07T00:00:00+00:00</updated>
     <id>/atom.xml</id>
     <entry xml:lang="en">
-        <title>Parallel computing with Gleam!</title>
-        <published>2025-03-05T00:00:00+00:00</published>
-        <updated>2025-03-05T00:00:00+00:00</updated>
+        <title>Super Efficient Sudoku Generation</title>
+        <published>2026-07-07T00:00:00+00:00</published>
+        <updated>2026-07-07T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            Arman Drismir
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="/projects/dancing-links-sudoku/"/>
+        <id>/projects/dancing-links-sudoku/</id>
+        
+        <content type="html" xml:base="/projects/dancing-links-sudoku/">&lt;p&gt;While creating my very first web app, a Sudoku game: (&lt;a href=&quot;https:&#x2F;&#x2F;sudoku.drismir.ca&#x2F;&quot; target=&quot;_blank&quot;&gt;https:&#x2F;&#x2F;sudoku.drismir.ca&#x2F;&lt;&#x2F;a&gt;).
+I hacked together a backtracking algorithm to generate the boards. For Sudoku,
+backtracking felt very brute-force-y so I promised I would find a more efficient
+way.&lt;&#x2F;p&gt;
+&lt;p&gt;It turns out there is pretty much only one option for quicker board generation
+and that is the dancing links algorithm by Donald Knuth from the year 2000!
+&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;pdf&#x2F;cs&#x2F;0011047&quot; target=&quot;_blank&quot;&gt;He wrote a paper on it&lt;&#x2F;a&gt;,
+but honestly the paper was so abstract I could not
+make much of it. The resource that carried me through the project was
+&lt;a href=&quot;&#x2F;Zendoku-puzzle-generation.pdf&quot; target=&quot;_blank&quot;&gt;this writeup&lt;&#x2F;a&gt;
+on how the 2007 Nintendo DS game Zedoku implemented dancing links.
+(The original website for the writeup has been lost to time so I had to use the
+wayback machine to access it 😬)&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-reduction-part-of-the-algorithm&quot;&gt;The Reduction Part of the Algorithm&lt;&#x2F;h2&gt;
+&lt;p&gt;Dancing links does not solve Sudoku specifically, instead it solves an absolute
+cover problem. That is, given a list of rows, find a selection of rows that have
+only one cell in every column.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, in the absolute cover problem below, there are two selections that
+solve the problem.&lt;&#x2F;p&gt;
+&lt;img src=&quot;&#x2F;constraint-matrix.png&quot; &#x2F;&gt;
+&lt;div class=&quot;container&quot; style=&quot;display: flex; width: 100%;&quot;&gt;
+  &lt;div style=&quot;margin: 14px;&quot;&gt;
+    &lt;p&gt;Solution 1&lt;&#x2F;p&gt;
+    &lt;img src=&quot;&#x2F;constraint-matrix-sol-1.png&quot; alt=&quot;Left&quot;&gt;
+  &lt;&#x2F;div&gt;
+  &lt;div style=&quot;margin: 14px;&quot;&gt;
+    &lt;p&gt;Solution 2&lt;&#x2F;p&gt;
+    &lt;img src=&quot;&#x2F;constraint-matrix-sol-2.png&quot; alt=&quot;Right&quot;&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Therefore, to get dancing links to solve a sudoku board we must first devise a
+reduction algorithm that will convert the constraints of a sudoku board into an
+absolute cover problem. For exactly on how we might do this checkout the zendoku
+writeup above, it is a very good resource.&lt;&#x2F;p&gt;
+&lt;p&gt;The TLDR; for the reduction is that we have a 729x324 table, where every row
+represents a single number being assigned into a single cell (Ie. row 0
+represents placing a 1 into the top left cell). Every column represents a
+constraint (ie. row 1 must have a 5 in it).&lt;&#x2F;p&gt;
+&lt;p&gt;We feed this 729x324 table into our implementation of the dancing links
+algorithm and it will return a list of rows where each constraint is satisfied
+exactly one. This means by definition that it is a valid sudoku board.&lt;&#x2F;p&gt;
+&lt;p&gt;Once dancing links returns the list of rows, we are not finished yet, we need to
+convert each row back into it’s respective number assignment on the sudoku board.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-dancing-links-part-of-the-algorithm&quot;&gt;The Dancing Links part of the Algorithm&lt;&#x2F;h2&gt;
+&lt;p&gt;The reduction is only half the battle of the algorithm. If you used only the
+above insights you would actually be implementing algorithm x, not dancing links.
+And for sudoku, you end up spending so
+much time searching through your massive 729x324 table, that it ends up being
+slower than the obvious backtracking algorithm.&lt;&#x2F;p&gt;
+&lt;p&gt;I would know, because that is exactly what I did, and this was the result I got:&lt;&#x2F;p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr style=&quot;text-align: left;&quot;&gt;
+      &lt;th&gt;Algorithm&lt;&#x2F;th&gt;
+      &lt;th&gt;Time per Board&lt;&#x2F;th&gt;
+    &lt;&#x2F;tr&gt;
+  &lt;&#x2F;thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Depth First Search&lt;&#x2F;td&gt;
+      &lt;td&gt;0.374 ms&lt;&#x2F;td&gt;
+    &lt;&#x2F;tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Algorithm X&lt;&#x2F;td&gt;
+      &lt;td&gt;253 ms&lt;&#x2F;td&gt;
+    &lt;&#x2F;tr&gt;
+  &lt;&#x2F;tbody&gt;
+&lt;&#x2F;table&gt;
+&lt;p&gt;To finally make this a dancing links implementation you must represent the table
+with a doubly linked list, with column headers tracking the number of cells below.
+Note the pointers wrap around the edges of the board.&lt;&#x2F;p&gt;
+&lt;p&gt;If you look at the
+&lt;a href=&quot;https:&#x2F;&#x2F;web.archive.org&#x2F;web&#x2F;20230426084731&#x2F;https:&#x2F;&#x2F;garethrees.org&#x2F;2007&#x2F;06&#x2F;10&#x2F;zendoku-generation&#x2F;#section-4.2&quot; target=&quot;_blank&quot;&gt;
+cycle of four operations taken by dancing links
+&lt;&#x2F;a&gt;
+you will be able to put together how we can use these pointers to completely
+avoid searching the table for populated cells.&lt;&#x2F;p&gt;
+&lt;p&gt;As a single example on how dancing links optimizes our search for rows. In step
+2 where we need to find a row that satisfies our selected column, dancing links allows
+us to instantly find the next available row instead of needing to check every index
+in that row. (&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ArmanDris&#x2F;dancing_links_sudoku&#x2F;blob&#x2F;bc571c155f4069a0022cd3feb6efb340a2e175e0&#x2F;src&#x2F;dancing_links.rs#L346-L375&quot; target=&quot;_blank&quot;&gt;Link to source code for selecting row&lt;&#x2F;a&gt;)&lt;&#x2F;p&gt;
+&lt;img src=&quot;&#x2F;dance-link-table.png&quot; style=&quot;width: 600px;&quot; &#x2F;&gt;
+&lt;p&gt;It would be impossible to enumerate all the fiddly details of implementing dancing links
+(which is probably why knuth and the Zendoku writeup avoid doing it as well). If
+you would like to implement this algorithm for yourself work through some simple examples
+to understand the ideas behind the reduction and how dancing links optimizes our searching
+and you will be able to work it out.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;how-fast-is-it&quot;&gt;How Fast is it?&lt;&#x2F;h2&gt;
+&lt;p&gt;Thankfully, after implementing dancing links I was able to beat backtracking
+(unlike my algorithm x implementation which was an epic fail).&lt;&#x2F;p&gt;
+&lt;p&gt;Here is the performance of all three:&lt;&#x2F;p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr style=&quot;text-align: left;&quot;&gt;
+      &lt;th&gt;Algorithm&lt;&#x2F;th&gt;
+      &lt;th&gt;Time per Board&lt;&#x2F;th&gt;
+    &lt;&#x2F;tr&gt;
+  &lt;&#x2F;thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Dancing Links&lt;&#x2F;td&gt;
+      &lt;td&gt;0.107 ms&lt;&#x2F;td&gt;
+    &lt;&#x2F;tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Depth First Search&lt;&#x2F;td&gt;
+      &lt;td&gt;0.374 ms&lt;&#x2F;td&gt;
+    &lt;&#x2F;tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Algorithm X&lt;&#x2F;td&gt;
+      &lt;td&gt;253 ms&lt;&#x2F;td&gt;
+    &lt;&#x2F;tr&gt;
+  &lt;&#x2F;tbody&gt;
+&lt;&#x2F;table&gt;
+&lt;p&gt;I also wanted to get a feel for what my algorithm was really doing, so I created a visualization of
+the 729x324 table and the links as they traverse toward a solution. Check this out:&lt;&#x2F;p&gt;
+&lt;iframe height=&quot;600&quot; src=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;embed&#x2F;dGBS9GXpn_w?si=1k_-4hHORyH8d-ee&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; referrerpolicy=&quot;strict-origin-when-cross-origin&quot; allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Parallelizing the Scan function with Gleam!</title>
+        <published>2026-07-06T00:00:00+00:00</published>
+        <updated>2026-07-06T00:00:00+00:00</updated>
         
         <author>
           <name>
@@ -21,112 +154,232 @@
         <link rel="alternate" type="text/html" href="/projects/parallel-reduce-gleam/"/>
         <id>/projects/parallel-reduce-gleam/</id>
         
-        <content type="html" xml:base="/projects/parallel-reduce-gleam/">&lt;h2 id=&quot;reduce-overview&quot;&gt;Reduce Overview&lt;&#x2F;h2&gt;
-&lt;p&gt;The goal is to write a &lt;code&gt;parallel_reduce&lt;&#x2F;code&gt; function that will use a &lt;code&gt;combine_fn&lt;&#x2F;code&gt; to aggregate a list.&lt;&#x2F;p&gt;
-&lt;p&gt;Parallel reduce should be able to spawn an appropriate number of threads to aggregate the entire list in &lt;strong&gt;O(log n)&lt;&#x2F;strong&gt; time! Parallel reduce should also be able to run much faster than &lt;code&gt;sequential_reduce&lt;&#x2F;code&gt; for n around 1_000_000. So in other words, it’s runtime must also have a small constant factor.&lt;&#x2F;p&gt;
-&lt;p&gt;Here is an example of using &lt;code&gt;parallel_reduce&lt;&#x2F;code&gt; to sum a list:&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;parallel_reduce([40, -200, 600, 5], fn(a, b) { a + b })
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&#x2F;&#x2F; Returns -&amp;gt; 445
+        <content type="html" xml:base="/projects/parallel-reduce-gleam/">&lt;h2 id=&quot;scan-overview&quot;&gt;Scan Overview&lt;&#x2F;h2&gt;
+&lt;p&gt;Scan computes the running total of a list. Eg. for the list &lt;code&gt;[2, 1, 10, 3]&lt;&#x2F;code&gt;, the
+running total would be &lt;code&gt;[0, 2, 3, 13]&lt;&#x2F;code&gt;. On first glance it is not at all obvious
+how this can be done in parallel. For example if we wanted to compute just the
+last two indexes in their own thread to save time: &lt;code&gt;[10, 3]&lt;&#x2F;code&gt;, we would be stuck
+because we need to know the sum of everything that came before to return the
+result. Of course waiting for the sum of everything that came before ruins the
+benefit of multithreading in the first place.&lt;&#x2F;p&gt;
+&lt;p&gt;The key to parellizing this is with a clever trick. Note that the &lt;code&gt;fold&lt;&#x2F;code&gt; or
+&lt;code&gt;reduce&lt;&#x2F;code&gt; function is easily parallelizable. If we want to calculate the &lt;code&gt;reduce&lt;&#x2F;code&gt;
+of &lt;code&gt;[1, 2, 3, ..., 100]&lt;&#x2F;code&gt; we can just spawn 5 threads, give each thread 20 elements
+and boom we can compute it in &lt;code&gt;log(n)&lt;&#x2F;code&gt; time.&lt;&#x2F;p&gt;
+&lt;p&gt;The clever trick for parallelizing scan is to first run a &lt;code&gt;reduce&lt;&#x2F;code&gt; on the list in
+&lt;code&gt;log(n)&lt;&#x2F;code&gt; time. As we reduce we will pass around the sum of each list segment in
+such a way that all segments will receive their sum of previous elements in at
+worst &lt;code&gt;log(n)&lt;&#x2F;code&gt; time. We can then run the scan parallelly in &lt;code&gt;log(n)&lt;&#x2F;code&gt; time, resulting
+in a total runtime of &lt;code&gt;2 log(n) + λ&lt;&#x2F;code&gt; (where λ is the cost of sending data across threads).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;visualization-of-process-tree&quot;&gt;Visualization of process tree&lt;&#x2F;h2&gt;
+&lt;p&gt;For an understanding of exactly how we need to pass around the data to achieve this runtime
+look at this visualization for scanning the list &lt;code&gt;[8, 4, 9, 12, 1, 73, 4, 90]&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;p&gt;Step #1: Spawn a tree of processes
+&lt;img src=&quot;&#x2F;par-scan-img-0.1.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #2: Run reduce on the leaf nodes, and send result to parent node
+&lt;img src=&quot;&#x2F;par-scan-img-1.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #3: In each parent node, store results of children, then sum them and send to parent
+&lt;img src=&quot;&#x2F;par-scan-img-2.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #4: Repeat for root node. Store results of children then sum them. Because this is the root node,
+instead of sending the sum up, we will begin the downward pass.
+&lt;img src=&quot;&#x2F;par-scan-img-3.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #5: Once the top of the tree has been reached, the root node gives its right child
+the sum of the left half of the tree.
+&lt;img src=&quot;&#x2F;par-scan-img-4.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #6: Now each intermediate node has all the information required to give its
+children the sum of everything to the left.
+&lt;img src=&quot;&#x2F;par-scan-img-5.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #7: Each leaf node uses its sum to calculate its portion of the scan.
+&lt;img src=&quot;&#x2F;par-scan-img-6.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #8: The results of each child’s scan is bubbled up the tree and the parent node
+combines the results.
+&lt;img src=&quot;&#x2F;par-scan-img-7.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #9: The root combines the two halves of the scan results, and we are left
+with the final result!
+&lt;img src=&quot;&#x2F;par-scan-img-8.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;implementation-in-gleam&quot;&gt;Implementation in Gleam&lt;&#x2F;h2&gt;
+&lt;p&gt;(For the full code &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ArmanDris&#x2F;star_scan&quot;&gt;check out the repo&lt;&#x2F;a&gt;)&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;results&quot;&gt;Results&lt;&#x2F;h2&gt;
+&lt;p&gt;Using an expensive combination function we can add up 500 elements faster than sequential!&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;star_scan % gleam run
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Sequential scan done in 5501 ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Parallel scan done in 1007 ms
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Another example with multiplication&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;parallel_reduce([40, -200, 600, 5], fn(a, b) { a * b })
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&#x2F;&#x2F; Returns -&amp;gt; -24000000
+&lt;p&gt;Note however, this was using this artificially expensive addition function:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;let expensive_combine_fn = fn(a, b) {
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  process.sleep(10)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  int.add(a, b)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;h2 id=&quot;first-attempt&quot;&gt;First attempt&lt;&#x2F;h2&gt;
-&lt;p&gt;Running the parallel algorithm on a list with &lt;strong&gt;100_000_000&lt;&#x2F;strong&gt; numbers we should be able to blow the sequential implementation out of the water. So lets try it!&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.35s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Sequential&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 626 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Par&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9876 ms&lt;&#x2F;span&gt;
+&lt;p&gt;What happens if we use the regular addition function?&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;star_scan % gleam run
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Sequential scan done in 0 ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Parallel scan done in 7 ms
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Oh dear, that is dreadful, our multithreaded solution is 15 times slower than the naive single threaded solution 😭.&lt;&#x2F;p&gt;
-&lt;h4 id=&quot;why-is-it-so-bad&quot;&gt;Why is it so bad?&lt;&#x2F;h4&gt;
-&lt;p&gt;Our algorithm spawns 10_000 threads that each calculate the total of 10_000 numbers. To make this easy I have a function that evenly divides the 100_000_000 into equally sized pieces for each of our threads. Lets find out how long splitting up our input takes.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.05s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Split&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; lists in 8635 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Splitting our list up for our processes takes way longer than the actual operation would have.&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;why-is-splitting-a-list-so-expensive&quot;&gt;Why is splitting a list so expensive?&lt;&#x2F;h3&gt;
-&lt;p&gt;Our split list function is essentially a recursive call to the built in split function:&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;let #(new_part, rest) = list.split(list, partition_size)
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Gleam represents lists as linked lists under the hood so each call to list_split is O(n). We call &lt;code&gt;split_list&lt;&#x2F;code&gt; $sqrt(n)$ times so we will spend $O(n sqrt(n) )$ on splitting the lists alone!&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;how-can-we-make-it-fast&quot;&gt;How can we make it fast?&lt;&#x2F;h3&gt;
-&lt;p&gt;To make it truly fast we need to stop thinking so sequentially and allow the processes to divide up the work themselves. This will also fit nicely into our desire for &lt;strong&gt;O(log n)&lt;&#x2F;strong&gt; performance.&lt;&#x2F;p&gt;
-&lt;p&gt;More specifically we should create a tree, where each process divides itself in two until it has a list of length m. When it has a list of length m then it will perform sequential reduce on its segment m of the list and combine with its twin before sending its result to its parent. Then we can divide the list in &lt;strong&gt;O(log n)&lt;&#x2F;strong&gt; time and reduce in &lt;strong&gt;O(log n)&lt;&#x2F;strong&gt; time, achieving the nice runtime we want!&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;second-attempt&quot;&gt;Second attempt&lt;&#x2F;h3&gt;
-&lt;p&gt;With our new strategy lets try with a list of 100_000_000 numbers and a process segment size of 1_000_000.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run &lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.28s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 633 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Par&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 4982 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Trying with a list of 100_000_000 numbers and a process segment size of 10_000.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.29s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 763 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Par&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 5229 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Trying with a list of 100_000_000 numbers and a process segment size of 100.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.29s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 691 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Par&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 4412 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;After running a few times and averaging it out, segment size of 1_000_000, 10_000, and 100 do not have much of an impact. I suspect that reduce with addition is so simple that the overhead of parallelization will always dominate the runtime in testing.&lt;&#x2F;p&gt;
-&lt;p&gt;With 100_000_000 numbers, a combine fn of &lt;code&gt;let combine_fn = fn(a, b) { a * b &#x2F; a &#x2F; a &#x2F; a }&lt;&#x2F;code&gt;, and a segment size of 100_000 it gets a lot closer.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiling&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;   &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Compiled&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in 0.21s&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Running&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; star_scan.main&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 1666 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Par&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 4825 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;&lt;strong&gt;Integrate this somehow&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;If we provide a more expensive combine fn then we can actually get some nice results with par reduce :D&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9272 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 3626 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9520 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 3856 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9520 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 3856 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9955 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 4617 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;gleam&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 9691 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 4439 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Wonderful! We are saving time :D&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;scan-overview&quot;&gt;Scan overview&lt;&#x2F;h2&gt;
-&lt;p&gt;Scan provides a running total of a list. Using some clever message passing we can parallelize this.&lt;&#x2F;p&gt;
-&lt;p&gt;Example using addition:&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;parallel_scan([40, -200, 600, 5], fn(a, b) { a + b })
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&#x2F;&#x2F; Returns -&amp;gt; [40, -160, 440, 445]
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Another example with multiplication&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;parallel_scan([40, -200, 600, 5], fn(a, b) { a * b })
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&#x2F;&#x2F; Returns -&amp;gt; [40, -8000, -480000, -2400000]
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;h2 id=&quot;random-notes&quot;&gt;Random notes:&lt;&#x2F;h2&gt;
-&lt;p&gt;Gleam’s built in fold is implemented sequentially and not optimized. It is the same as my simple custom implementation&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh z-code&quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;src&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; &lt;span class=&quot;z-meta z-group z-expansion z-job z-shell&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-variable z-job z-shell&quot;&gt;%&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; gleam run&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Built&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; in foldl time taken 10818 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Reduce&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 10959 ms&lt;&#x2F;span&gt;
-&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;Hybrid&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; time taken 5114 ms&lt;&#x2F;span&gt;
+&lt;p&gt;Our parallel function gets destroyed X_X. This is an important limitation of
+this parallel implementation. We incur a lot of overhead constructing the tree
+and passing values around. This will only ever save time in cases where the
+combine function is very expensive.&lt;&#x2F;p&gt;
+&lt;p&gt;When the combine function is expensive however, this function can give some very
+nice runtimes :)&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Solution for Leet Code 60. Permutation Sequence</title>
+        <published>2026-03-01T00:00:00+00:00</published>
+        <updated>2026-03-01T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            Arman Drismir
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="/projects/leet-code-permutation-sequence/"/>
+        <id>/projects/leet-code-permutation-sequence/</id>
+        
+        <content type="html" xml:base="/projects/leet-code-permutation-sequence/">&lt;p&gt;The set [1, 2, 3, …, n] contains a total of n! unique permutations.&lt;&#x2F;p&gt;
+&lt;p&gt;By listing and labeling all of the permutations in ascending order, we get the following sequence for n = 3:&lt;&#x2F;p&gt;
+&lt;div style=&quot;font-size: 1em; line-height: 1.1;&quot;&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code&gt;123&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;132&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;213&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;231&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;312&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;321&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;the-solution&quot;&gt;The solution:&lt;&#x2F;h2&gt;
+&lt;p&gt;First, think about the problem of generating just the first number of the
+solution. To help visualize the pattern look at the first digit in the
+permutation set for &lt;code&gt;n=4&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;div style=&quot;font-size: 1em; line-height: 1.1;&quot;&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code&gt;1 234&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;1 243&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;1 324&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;1 342&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;1 423&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;1 432&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;2 134&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;2 143&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;2 314&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;2 341&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;2 413&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;2 431&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;3 124&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;3 142&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;3 214&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;3 241&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;3 412&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;3 421&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;4 123&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;4 132&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;4 213&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;4 231&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;4 312&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;4 321&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;We can see that the first number starts at 1, and increments after 6 iterations.
+For an arbitrary &lt;code&gt;n&lt;&#x2F;code&gt;, how many iterations will it take before the first digit
+increments?&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;In general, the first digit increments after &lt;code&gt;(n-1)!&lt;&#x2F;code&gt; iterations.&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;So after every &lt;code&gt;(n-1)!&lt;&#x2F;code&gt; sized “block” the first digit will increase by 1.
+Therefore &lt;code&gt;k &#x2F;&#x2F; (n-1)!&lt;&#x2F;code&gt; (where &lt;code&gt;&#x2F;&#x2F;&lt;&#x2F;code&gt; is truncated division) will get us the
+number of “blocks” until the &lt;code&gt;k&lt;&#x2F;code&gt;th permutation. After each block the first
+digit increments by one, so &lt;code&gt;k &#x2F;&#x2F; (n-1)!&lt;&#x2F;code&gt; will give us the first digit!&lt;&#x2F;p&gt;
+&lt;br &#x2F;&gt;
+Now we try to find the next digit. If we draw out each block&#x27;s remaining digits 
+we can see that a similar-ish pattern emerges, where there are &quot;blocks&quot; that
+start with the same digit.
+&lt;div style=&quot;font-size: 1em; line-height: 1.1;&quot;&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code&gt;_ 234&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 243&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 324&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 342&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 423&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 432&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 134&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 143&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 314&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 341&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 413&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 431&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 124&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 142&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 214&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 241&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 412&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 421&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 123&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 132&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 213&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 231&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 312&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 321&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The pattern is a little hard to spot, but what is happening is that within each
+“super-block” of 6 permutations, we have a “sub-block” of size&lt;code&gt;(n-2)!&lt;&#x2F;code&gt;, and
+within each sub block we increment from 1 to 4, using the numbers that have not
+already been used by the first digit.&lt;&#x2F;p&gt;
+&lt;p&gt;To get the second digit we calculate the size of our “sub-block”, in this case
+&lt;code&gt;(4-2)!&lt;&#x2F;code&gt; so &lt;code&gt;2&lt;&#x2F;code&gt;. Then we calculate how many “sub-blocks” into our “super-block”
+&lt;code&gt;k&lt;&#x2F;code&gt; appears in. The formula for this is
+&lt;code&gt;(k - super_block_start_index - 1) &#x2F;&#x2F; sub_block_size&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;So we can get how many “sub-blocks” into our “super-block” &lt;code&gt;k&lt;&#x2F;code&gt; appears at, but
+each “sub-block” has a different number, so how does this help us?&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Key insight:&lt;&#x2F;strong&gt; Within each “super-block” the first character of the first
+“sub-block” is always the smallest available number. The first character of the
+second “sub-block” is always the 2nd smallest available number, etc…&lt;&#x2F;p&gt;
+&lt;p&gt;So the second digit is  &lt;code&gt;(k - super_block_start_index - 1) &#x2F;&#x2F; sub_block_size = x&lt;&#x2F;code&gt;
+where &lt;code&gt;x&lt;&#x2F;code&gt; represents the &lt;code&gt;x&lt;&#x2F;code&gt;th smallest character we can still use.&lt;&#x2F;p&gt;
+&lt;br &#x2F;&gt;
+&lt;p&gt;This process is repeated, dividing the problem into smaller “sub-blocks” until
+we have resolved each character in the answer.&lt;&#x2F;p&gt;
+&lt;p&gt;The final code for the problem is this:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;py&quot; class=&quot;language-py z-code&quot;&gt;&lt;code class=&quot;language-py&quot; data-lang=&quot;py&quot;&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-import z-from z-python&quot;&gt;from&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-meta z-import-source z-python&quot;&gt; &lt;span class=&quot;z-meta z-import-path z-python&quot;&gt;&lt;span class=&quot;z-meta z-import-name z-python&quot;&gt;math&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-import z-python&quot;&gt;import&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt; &lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;factorial&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-class z-python&quot;&gt;&lt;span class=&quot;z-storage z-type z-class z-python&quot;&gt;&lt;span class=&quot;z-keyword z-declaration z-class z-python&quot;&gt;class&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-entity z-name z-class z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;Solution&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-class z-begin z-python&quot;&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt;    &lt;span class=&quot;z-storage z-type z-function z-python&quot;&gt;&lt;span class=&quot;z-keyword z-declaration z-function z-python&quot;&gt;def&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-entity z-name z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;getPermutation&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;self&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-parameters z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-annotation z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-separator z-annotation z-parameter z-python&quot;&gt;:&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-support z-type z-python&quot;&gt;int&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-separator z-parameters z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;k&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-annotation z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-separator z-annotation z-parameter z-python&quot;&gt;:&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-support z-type z-python&quot;&gt;int&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-annotation z-return z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-separator z-annotation z-return z-python&quot;&gt;-&amp;gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-support z-type z-python&quot;&gt;str&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-function z-begin z-python&quot;&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;solution&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;nums&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-sequence z-list z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-sequence z-begin z-python&quot;&gt;[&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;x&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-expression z-generator z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-loop z-for z-generator z-python&quot;&gt;for&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;x&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-control z-loop z-for z-in z-python&quot;&gt;in&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-function z-builtin z-python&quot;&gt;range&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;+&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-sequence z-end z-python&quot;&gt;]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_start_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;0&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;iteration&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;0&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-meta z-statement z-loop z-while z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-loop z-while z-python&quot;&gt;while&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-function z-builtin z-python&quot;&gt;len&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;solution&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-comparison z-python&quot;&gt;&amp;lt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-block z-loop z-while z-python&quot;&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_size&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;factorial&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-group z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-group z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;iteration&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-group z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-group z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-group z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;k&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_start_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-group z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;&#x2F;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_size&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;solution&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-augmented z-python&quot;&gt;+=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-type z-python&quot;&gt;str&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-item-access z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;nums&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-item-access z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-brackets z-begin z-python&quot;&gt;[&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-item-access z-arguments z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-item-access z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-brackets z-end z-python&quot;&gt;]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;nums&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-accessor z-dot z-python&quot;&gt;.&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;pop&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_start_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-augmented z-python&quot;&gt;+=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_size&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;*&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;iteration&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-augmented z-python&quot;&gt;+=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-keyword z-control z-flow z-return z-python&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;solution&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 </content>
         
@@ -153,7 +406,7 @@
 &lt;p&gt;&lt;img src=&quot;&#x2F;drafts&#x2F;coco-miner&#x2F;lol-miner-grafana.png&quot; alt=&quot;grafana statistics of lol miner’s progress&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;So I was a able to get 22 shares of the block in 15 minutes. If I leave it running for a whole day I can expect about 6500 NEXA. &lt;strong&gt;This equates to $0.007 USD a day.&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;At this rate if I mined NEXA coin for 391 389 years then I would be have a million US dollars! 🥳&lt;&#x2F;p&gt;
-&lt;p&gt;You can check out the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;coconut-mine.drismir.ca&#x2F;d&#x2F;de78xri7hrugwf&#x2F;coconut-mine?orgId=1&amp;amp;from=now-6h&amp;amp;to=now&amp;amp;timezone=browser&quot;&gt;live analytics&lt;&#x2F;a&gt; but it will likely be idle since mining NEXA coin makes my webserver unstable 😬&lt;&#x2F;p&gt;
+&lt;!-- You can check out the [live analytics](https:&#x2F;&#x2F;coconut-mine.drismir.ca&#x2F;d&#x2F;de78xri7hrugwf&#x2F;coconut-mine?orgId=1&amp;from=now-6h&amp;to=now&amp;timezone=browser) but it will likely be idle since mining NEXA coin makes my webserver unstable 😬 --&gt;
 </content>
         
     </entry>
@@ -201,7 +454,7 @@ minimal disruption to our loyal users. This was achieved with the following CSS 
 &lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h3 id=&quot;investigation&quot;&gt;Investigation&lt;&#x2F;h3&gt;
-&lt;p&gt;After a thorough investigation with our site reliability team we discovered that the error occured because more users completed the mini game than we anticipated.
+&lt;p&gt;After a thorough investigation with our site reliability team we discovered that the error occurred because more users completed the mini game than we anticipated.
 As shown by the graph if more than five users submit a leaderboard time the system is completely overwhelmed and the visibility of the leaderboard header drops to zero.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;img src=&quot;&#x2F;projects&#x2F;med-ethics&#x2F;leaderboard_visibility.png&quot; alt=&quot;UI Graph&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 </content>
@@ -401,7 +654,7 @@ Since the backend can receive any Base64 encoded image a crafty user could easil
    &lt;p&gt;This dataset is imbalanced, 22% of clients default while 78% do not. For
       this reason F1 score and Recall are the metrics we want to pay a lot of
       attention to. F1 score will give us a good indication of overall
-      performance and Recall will tell us how well our model preforms when it
+      performance and Recall will tell us how well our model performs when it
       sees the clients who do default.
    &lt;&#x2F;p&gt;
    &lt;p&gt;The Kaggle page has descriptions for what values in the columns
@@ -707,7 +960,7 @@ documentation. I had heard of all three before but I never really understood why
 A big reason this made me feel like a real programmer was because I was constantly interacting with by
 own past design decisions. The utility of abstractions and classes was hard for me to accept.
 As a project grows large enough abstractions become necessary and obvious, when I made that
-realization I could understand why code I was reding across the board was designed the way it was.&lt;&#x2F;p&gt;
+realization I could understand why code I was reading across the board was designed the way it was.&lt;&#x2F;p&gt;
 &lt;p&gt;Designing a chess engine is an amazing experience. Even a year later I still get the urge
 to come back and test out potential improvements.&lt;&#x2F;p&gt;
 </content>

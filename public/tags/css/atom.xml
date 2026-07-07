@@ -51,7 +51,7 @@ minimal disruption to our loyal users. This was achieved with the following CSS 
 &lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-css&quot;&gt;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h3 id=&quot;investigation&quot;&gt;Investigation&lt;&#x2F;h3&gt;
-&lt;p&gt;After a thorough investigation with our site reliability team we discovered that the error occured because more users completed the mini game than we anticipated.
+&lt;p&gt;After a thorough investigation with our site reliability team we discovered that the error occurred because more users completed the mini game than we anticipated.
 As shown by the graph if more than five users submit a leaderboard time the system is completely overwhelmed and the visibility of the leaderboard header drops to zero.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;img src=&quot;&#x2F;projects&#x2F;med-ethics&#x2F;leaderboard_visibility.png&quot; alt=&quot;UI Graph&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 </content>

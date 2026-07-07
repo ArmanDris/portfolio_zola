@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Arman - Leet Code</title>
+    <subtitle>Hello!</subtitle>
+    <link rel="self" type="application/atom+xml" href="/tags/leet-code/atom.xml"/>
+    <link rel="alternate" type="text/html" href="/"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-03-01T00:00:00+00:00</updated>
+    <id>/tags/leet-code/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Solution for Leet Code 60. Permutation Sequence</title>
+        <published>2026-03-01T00:00:00+00:00</published>
+        <updated>2026-03-01T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            Arman Drismir
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="/projects/leet-code-permutation-sequence/"/>
+        <id>/projects/leet-code-permutation-sequence/</id>
+        
+        <content type="html" xml:base="/projects/leet-code-permutation-sequence/">&lt;p&gt;The set [1, 2, 3, …, n] contains a total of n! unique permutations.&lt;&#x2F;p&gt;
+&lt;p&gt;By listing and labeling all of the permutations in ascending order, we get the following sequence for n = 3:&lt;&#x2F;p&gt;
+&lt;div style=&quot;font-size: 1em; line-height: 1.1;&quot;&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code&gt;123&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;132&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;213&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;231&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;312&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;321&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;the-solution&quot;&gt;The solution:&lt;&#x2F;h2&gt;
+&lt;p&gt;First, think about the problem of generating just the first number of the
+solution. To help visualize the pattern look at the first digit in the
+permutation set for &lt;code&gt;n=4&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;div style=&quot;font-size: 1em; line-height: 1.1;&quot;&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code&gt;1 234&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;1 243&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;1 324&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;1 342&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;1 423&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;1 432&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;2 134&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;2 143&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;2 314&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;2 341&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;2 413&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;2 431&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;3 124&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;3 142&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;3 214&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;3 241&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;3 412&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;3 421&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;4 123&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;4 132&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;4 213&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;4 231&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;4 312&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;4 321&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;We can see that the first number starts at 1, and increments after 6 iterations.
+For an arbitrary &lt;code&gt;n&lt;&#x2F;code&gt;, how many iterations will it take before the first digit
+increments?&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;In general, the first digit increments after &lt;code&gt;(n-1)!&lt;&#x2F;code&gt; iterations.&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;So after every &lt;code&gt;(n-1)!&lt;&#x2F;code&gt; sized “block” the first digit will increase by 1.
+Therefore &lt;code&gt;k &#x2F;&#x2F; (n-1)!&lt;&#x2F;code&gt; (where &lt;code&gt;&#x2F;&#x2F;&lt;&#x2F;code&gt; is truncated division) will get us the
+number of “blocks” until the &lt;code&gt;k&lt;&#x2F;code&gt;th permutation. After each block the first
+digit increments by one, so &lt;code&gt;k &#x2F;&#x2F; (n-1)!&lt;&#x2F;code&gt; will give us the first digit!&lt;&#x2F;p&gt;
+&lt;br &#x2F;&gt;
+Now we try to find the next digit. If we draw out each block&#x27;s remaining digits 
+we can see that a similar-ish pattern emerges, where there are &quot;blocks&quot; that
+start with the same digit.
+&lt;div style=&quot;font-size: 1em; line-height: 1.1;&quot;&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code&gt;_ 234&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 243&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 324&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 342&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 423&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 432&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 134&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 143&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 314&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 341&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 413&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 431&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 124&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 142&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 214&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 241&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 412&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 421&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 123&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 132&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 213&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 231&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;br &#x2F;&gt;
+  &lt;li&gt;&lt;code&gt;_ 312&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+  &lt;li&gt;&lt;code&gt;_ 321&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The pattern is a little hard to spot, but what is happening is that within each
+“super-block” of 6 permutations, we have a “sub-block” of size&lt;code&gt;(n-2)!&lt;&#x2F;code&gt;, and
+within each sub block we increment from 1 to 4, using the numbers that have not
+already been used by the first digit.&lt;&#x2F;p&gt;
+&lt;p&gt;To get the second digit we calculate the size of our “sub-block”, in this case
+&lt;code&gt;(4-2)!&lt;&#x2F;code&gt; so &lt;code&gt;2&lt;&#x2F;code&gt;. Then we calculate how many “sub-blocks” into our “super-block”
+&lt;code&gt;k&lt;&#x2F;code&gt; appears in. The formula for this is
+&lt;code&gt;(k - super_block_start_index - 1) &#x2F;&#x2F; sub_block_size&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;So we can get how many “sub-blocks” into our “super-block” &lt;code&gt;k&lt;&#x2F;code&gt; appears at, but
+each “sub-block” has a different number, so how does this help us?&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Key insight:&lt;&#x2F;strong&gt; Within each “super-block” the first character of the first
+“sub-block” is always the smallest available number. The first character of the
+second “sub-block” is always the 2nd smallest available number, etc…&lt;&#x2F;p&gt;
+&lt;p&gt;So the second digit is  &lt;code&gt;(k - super_block_start_index - 1) &#x2F;&#x2F; sub_block_size = x&lt;&#x2F;code&gt;
+where &lt;code&gt;x&lt;&#x2F;code&gt; represents the &lt;code&gt;x&lt;&#x2F;code&gt;th smallest character we can still use.&lt;&#x2F;p&gt;
+&lt;br &#x2F;&gt;
+&lt;p&gt;This process is repeated, dividing the problem into smaller “sub-blocks” until
+we have resolved each character in the answer.&lt;&#x2F;p&gt;
+&lt;p&gt;The final code for the problem is this:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;py&quot; class=&quot;language-py z-code&quot;&gt;&lt;code class=&quot;language-py&quot; data-lang=&quot;py&quot;&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-import z-from z-python&quot;&gt;from&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-meta z-import-source z-python&quot;&gt; &lt;span class=&quot;z-meta z-import-path z-python&quot;&gt;&lt;span class=&quot;z-meta z-import-name z-python&quot;&gt;math&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-import z-python&quot;&gt;import&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt; &lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;factorial&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-class z-python&quot;&gt;&lt;span class=&quot;z-storage z-type z-class z-python&quot;&gt;&lt;span class=&quot;z-keyword z-declaration z-class z-python&quot;&gt;class&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-entity z-name z-class z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;Solution&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-class z-begin z-python&quot;&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt;    &lt;span class=&quot;z-storage z-type z-function z-python&quot;&gt;&lt;span class=&quot;z-keyword z-declaration z-function z-python&quot;&gt;def&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-entity z-name z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;getPermutation&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;self&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-parameters z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-annotation z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-separator z-annotation z-parameter z-python&quot;&gt;:&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-support z-type z-python&quot;&gt;int&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-separator z-parameters z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;k&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-annotation z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-separator z-annotation z-parameter z-python&quot;&gt;:&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-support z-type z-python&quot;&gt;int&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-annotation z-return z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-separator z-annotation z-return z-python&quot;&gt;-&amp;gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-support z-type z-python&quot;&gt;str&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-function z-begin z-python&quot;&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;solution&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;nums&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-sequence z-list z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-sequence z-begin z-python&quot;&gt;[&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;x&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-expression z-generator z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-loop z-for z-generator z-python&quot;&gt;for&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;x&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-control z-loop z-for z-in z-python&quot;&gt;in&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-function z-builtin z-python&quot;&gt;range&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;+&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-sequence z-end z-python&quot;&gt;]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_start_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;0&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;iteration&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;0&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-meta z-statement z-loop z-while z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-loop z-while z-python&quot;&gt;while&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-function z-builtin z-python&quot;&gt;len&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;solution&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-comparison z-python&quot;&gt;&amp;lt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-block z-loop z-while z-python&quot;&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_size&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;factorial&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-group z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-group z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;iteration&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-group z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-group z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-group z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;k&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_start_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-group z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;&#x2F;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_size&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;solution&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-augmented z-python&quot;&gt;+=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-type z-python&quot;&gt;str&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-item-access z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;nums&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-item-access z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-brackets z-begin z-python&quot;&gt;[&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-item-access z-arguments z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-item-access z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-brackets z-end z-python&quot;&gt;]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;nums&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-accessor z-dot z-python&quot;&gt;.&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;pop&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_start_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-augmented z-python&quot;&gt;+=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_size&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;*&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;box_index&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;            &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;iteration&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-augmented z-python&quot;&gt;+=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;        &lt;span class=&quot;z-keyword z-control z-flow z-return z-python&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;solution&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+        
+    </entry>
+</feed>

@@ -15,7 +15,7 @@ I built a svelte/flask app around the ML model I made for a CPSC 330 class proje
    <p>This dataset is imbalanced, 22% of clients default while 78% do not. For
       this reason F1 score and Recall are the metrics we want to pay a lot of
       attention to. F1 score will give us a good indication of overall
-      performance and Recall will tell us how well our model preforms when it
+      performance and Recall will tell us how well our model performs when it
       sees the clients who do default.
    </p>
    <p>The Kaggle page has descriptions for what values in the columns
