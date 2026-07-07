@@ -23,11 +23,11 @@ Right now I am knee deep in the BEAM ecosystem via Erlang, Elixir, and Gleam. My
   You can read about the projects I get up to on my <a href="/projects">projects page</a>. These are my two favorites:
   <ol style="font-size: 20px; line-height: 3rem">
     <li>
-      <img src="/cpp.webp" style="display: inline; margin: 0; margin-bottom: -4px; margin-left: 4px; margin-right: 4px; width: 24px; border-radius: 0;"/>
+      <img src="/cpp.svg" style="display: inline; box-shadow: none; background: none; margin: 0; margin-bottom: -4px; margin-left: 4px; margin-right: 4px; width: 24px; border-radius: 0;"/>
       <a href="/projects/cpp-chess-engine/">Chess Engine</a>
     </li>
     <li>
-      <img src="/rs.webp" style="display: inline; margin: 0; margin-bottom: -4px; margin-left: 4px; margin-right: 4px; width: 24px; border-radius: 0;"/>
+      <img src="/rust-logo.svg" style="display: inline; box-shadow: none; background: none;  margin: 0; margin-bottom: -4px; margin-left: 4px; margin-right: 4px; width: 24px; border-radius: 0;"/>
       <a href="/projects/dancing-links-sudoku/"> Generating Sudoku Boards as Efficiently as Possible</a>
     </li>
   </ol>

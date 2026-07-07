@@ -39,36 +39,36 @@ look at this visualization for scanning the list `[8, 4, 9, 12, 1, 73, 4, 90]`:
 
 
 Step #1: Spawn a tree of processes
-<img src="/par-scan-img-0.1.png" />
+<img src="par-scan-1.png" />
 
 Step #2: Run reduce on the leaf nodes, and send result to parent node
-<img src="/par-scan-img-1.png" />
+<img src="par-scan-2.png" />
 
 Step #3: In each parent node, store results of children, then sum them and send to parent
-<img src="/par-scan-img-2.png" />
+<img src="par-scan-3.png" />
 
 Step #4: Repeat for root node. Store results of children then sum them. Because this is the root node,
 instead of sending the sum up, we will begin the downward pass.
-<img src="/par-scan-img-3.png" />
+<img src="par-scan-4.png" />
 
 Step #5: Once the top of the tree has been reached, the root node gives its right child
 the sum of the left half of the tree.
-<img src="/par-scan-img-4.png" />
+<img src="par-scan-5.png" />
 
 Step #6: Now each intermediate node has all the information required to give its
 children the sum of everything to the left.
-<img src="/par-scan-img-5.png" />
+<img src="par-scan-6.png" />
 
 Step #7: Each leaf node uses its sum to calculate its portion of the scan.
-<img src="/par-scan-img-6.png" />
+<img src="par-scan-7.png" />
 
 Step #8: The results of each child's scan is bubbled up the tree and the parent node
 combines the results.
-<img src="/par-scan-img-7.png" />
+<img src="par-scan-8.png" />
 
 Step #9: The root combines the two halves of the scan results, and we are left
 with the final result!
-<img src="/par-scan-img-8.png" />
+<img src="par-scan-9.png" />
 
 
 ## Implementation in Gleam
