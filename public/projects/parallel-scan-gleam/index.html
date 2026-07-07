@@ -1,0 +1,72 @@
+<!doctype html><html lang=en xmlns=http://www.w3.org/1999/xhtml><head><meta charset=UTF-8><meta content=Hello! name=description><meta content="width=device-width,initial-scale=1" name=viewport><meta content=#ff7800 name=theme-color><meta content=#ffa348 media=(prefers-color-scheme:dark) name=theme-color><title>Parallelizing the Scan function with Gleam! - Arman</title><link href=/projects/parallel-scan-gleam/ rel=canonical><link media="(prefers-color-scheme: light)" href=/syntax-theme-light.css rel=stylesheet><link media="(prefers-color-scheme: dark)" href=/syntax-theme-dark.css rel=stylesheet><link href=https://vmst.io/@daudix rel=me><link href=/favicon.png rel=icon type=image/png><link href=/apple-touch-icon.png rel=apple-touch-icon sizes=180x180 type=image/png><link href=/rss.xml rel=alternate title=Arman type=application/rss+xml><link href=/atom.xml rel=alternate title=Arman type=application/atom+xml><style>:root{--primary-color:#ff7800;--contrast-color:#fff}[data-theme=dark]{--primary-color:#ffa348}@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--primary-color:#ffa348}}[data-theme=dark]{--contrast-color:#000c}@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--contrast-color:#000c}}</style><link href=/style.css rel=stylesheet><link href=/katex.css rel=stylesheet><script>document.addEventListener("DOMContentLoaded", function () {
+		let blocks = document.querySelectorAll("pre[class^='language-']");
+
+		blocks.forEach((block) => {
+			if (navigator.clipboard) {
+				// Code block header title
+				let title = document.createElement("span");
+				let lang = block.getAttribute("data-lang");
+				title.innerHTML = lang;
+
+				// Copy button icon
+				let icon = document.createElement("i");
+				icon.classList.add("icon");
+
+				// Copy button
+				let button = document.createElement("button");
+				button.setAttribute("title", "Copy code")
+				button.appendChild(icon);
+
+				// Code block header
+				let header = document.createElement("div");
+				header.classList.add("header");
+				header.appendChild(button);
+				header.appendChild(title);
+
+				// Container that holds header and the code block itself
+				let container = document.createElement("div");
+				container.classList.add("pre-container");
+				container.appendChild(header);
+
+				// Move code block into the container
+				block.parentNode.insertBefore(container, block);
+				container.appendChild(block);
+
+				button.addEventListener("click", async () => {
+					await copyCode(block, header, button); // Pass the button here
+				});
+			}
+		});
+
+		async function copyCode(block, header, button) {
+			let code = block.querySelector("code");
+			let text = code.innerText;
+
+			await navigator.clipboard.writeText(text);
+
+			header.classList.add("active");
+			button.setAttribute("disabled", true);
+
+			header.addEventListener("animationend", () => {
+				header.classList.remove("active");
+				button.removeAttribute("disabled");
+			}, { once: true });
+		}
+	});</script><script>document.addEventListener("DOMContentLoaded", function () {
+				renderMathInElement(document.body, {
+					delimiters: [
+						{ left: "$$", right: "$$", display: true },
+						{ left: "$", right: "$", display: false },
+					],
+				});
+			});</script><script data-goatcounter=https://duckquill.goatcounter.com/count src=/count.js></script><script src=/katex.min.js></script><script src=/auto-render.min.js></script><meta content=Arman property=og:site_name><meta content="Parallelizing the Scan function with Gleam! - Arman" property=og:title><meta content=/projects/parallel-scan-gleam/ property=og:url><meta content="By breaking the problem into a tree, we can scan in O(log n)" property=og:description><meta content=/card.png property=og:image><meta content=en_US property=og:locale><body><header id=site-nav><nav><a href=#main id=main-content tabindex=0> Skip to main content </a><ul><li id=home><a href=/> Home </a><li><a href=/projects/>Projects</a><li id=github><a class=circle href=https://github.com/ArmanDris target=_blank title=GitHub> <i class=icon></i> </a><li id=linkedin><a class=circle href=https://www.linkedin.com/in/arman-drismir-b378011b9/ target=_blank title=LinkedIn> <i class=icon></i> </a></ul></nav></header><div class=container id=main><article><h1>Parallelizing the Scan function with Gleam!</h1><small> <time datetime=" 2026-07-06T00:00:00+00:00">Published on July 06, 2026</time><span> • By Arman Drismir</span><span> • </span> <span>3 minutes read</span></small><h2 id=scan-overview>Scan Overview</h2><p>Scan computes the running total of a list. Eg. for the list <code>[2, 1, 10, 3]</code>, the running total would be <code>[0, 2, 3, 13]</code>. On first glance it is not at all obvious how this can be done in parallel. For example if we wanted to compute just the last two indexes in their own thread to save time: <code>[10, 3]</code>, we would be stuck because we need to know the sum of everything that came before to return the result. Of course waiting for the sum of everything that came before ruins the benefit of multithreading in the first place.<p>The key to parellizing this is with a clever trick. Note that the <code>fold</code> or <code>reduce</code> function is easily parallelizable. If we want to calculate the <code>reduce</code> of <code>[1, 2, 3, ..., 100]</code> we can just spawn 5 threads, give each thread 20 elements and boom we can compute it in <code>log(n)</code> time.<p>The clever trick for parallelizing scan is to first run a <code>reduce</code> on the list in <code>log(n)</code> time. As we reduce we will pass around the sum of each list segment in such a way that all segments will receive their sum of previous elements in at worst <code>log(n)</code> time. We can then run the scan parallelly in <code>log(n)</code> time, resulting in a total runtime of <code>2 log(n) + λ</code> (where λ is the cost of sending data across threads).<h2 id=visualization-of-process-tree>Visualization of process tree</h2><p>For an understanding of exactly how we need to pass around the data to achieve this runtime look at this visualization for scanning the list <code>[8, 4, 9, 12, 1, 73, 4, 90]</code>:<p>Step #1: Spawn a tree of processes <img src=par-scan-1.png><p>Step #2: Run reduce on the leaf nodes, and send result to parent node <img src=par-scan-2.png><p>Step #3: In each parent node, store results of children, then sum them and send to parent <img src=par-scan-3.png><p>Step #4: Repeat for root node. Store results of children then sum them. Because this is the root node, instead of sending the sum up, we will begin the downward pass. <img src=par-scan-4.png><p>Step #5: Once the top of the tree has been reached, the root node gives its right child the sum of the left half of the tree. <img src=par-scan-5.png><p>Step #6: Now each intermediate node has all the information required to give its children the sum of everything to the left. <img src=par-scan-6.png><p>Step #7: Each leaf node uses its sum to calculate its portion of the scan. <img src=par-scan-7.png><p>Step #8: The results of each child’s scan is bubbled up the tree and the parent node combines the results. <img src=par-scan-8.png><p>Step #9: The root combines the two halves of the scan results, and we are left with the final result! <img src=par-scan-9.png><h2 id=implementation-in-gleam>Implementation in Gleam</h2><p>(For the full code <a href=https://github.com/ArmanDris/star_scan>check out the repo</a>)<h2 id=results>Results</h2><p>Using an expensive combination function we can add up 500 elements faster than sequential!<pre class="language-gleam z-code" data-lang=gleam><code class=language-gleam data-lang=gleam><span class="z-text z-plain">star_scan % gleam run
+</span><span class="z-text z-plain">Sequential scan done in 5501 ms
+</span><span class="z-text z-plain">Parallel scan done in 1007 ms
+</span></code></pre><p>Note however, this was using this artificially expensive addition function:<pre class="language-gleam z-code" data-lang=gleam><code class=language-gleam data-lang=gleam><span class="z-text z-plain">let expensive_combine_fn = fn(a, b) {
+</span><span class="z-text z-plain">  process.sleep(10)
+</span><span class="z-text z-plain">  int.add(a, b)
+</span><span class="z-text z-plain">}
+</span></code></pre><p>What happens if we use the regular addition function?<pre class="language-gleam z-code" data-lang=gleam><code class=language-gleam data-lang=gleam><span class="z-text z-plain">star_scan % gleam run
+</span><span class="z-text z-plain">Sequential scan done in 0 ms
+</span><span class="z-text z-plain">Parallel scan done in 7 ms
+</span></code></pre><p>Our parallel function gets destroyed X_X. This is an important limitation of this parallel implementation. We incur a lot of overhead constructing the tree and passing values around. This will only ever save time in cases where the combine function is very expensive.<p>When the combine function is expensive however, this function can give some very nice runtimes :)</article><hr><nav id=post-nav><a class="post-nav-item post-nav-prev" href=/projects/leet-code-permutation-sequence/> <div class=nav-arrow>Previous</div> <span class=post-title>Solution for Leet Code 60. Permutation Sequence</span> </a><a class="post-nav-item post-nav-next" href=/projects/dancing-links-sudoku/> <div class=nav-arrow>Next</div> <span class=post-title>Super Efficient Sudoku Generation</span> </a></nav><div class=dialog-buttons><a class=inline-button href=#top>Go to Top</a></div></div><footer id=site-footer><nav><ul><li><a href=/>Home</a><li><a href=/projects/>Projects</a></ul></nav><p><small> Powered by Zola and Duckquill </small><ul id=socials><li><a rel="noopener me" href=https://github.com/ArmanDris target=_blank title=GitHub> <i style="--icon:url(&#34data:image/svg+xml,%3Csvg role='img' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ctitle%3EGitHub%3C/title%3E%3Cpath d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E&#34)" class=icon></i> <span>GitHub</span> </a><li><a rel="noopener me" href=https://www.linkedin.com/in/arman-drismir-b378011b9/ target=_blank title=Twitter> <i class=icon style=--icon:url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22currentColor%22%20class%3D%22bi%20bi-linkedin%22%20viewBox%3D%220%200%2016%2016%22%3E%0A%20%20%3Cpath%20d%3D%22M0%201.146C0%20.513.526%200%201.175%200h13.65C15.474%200%2016%20.513%2016%201.146v13.708c0%20.633-.526%201.146-1.175%201.146H1.175C.526%2016%200%2015.487%200%2014.854zm4.943%2012.248V6.169H2.542v7.225zm-1.2-8.212c.837%200%201.358-.554%201.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4%203.226%202.4%203.934c0%20.694.521%201.248%201.327%201.248zm4.908%208.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878%201.232-.878.869%200%201.216.662%201.216%201.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274%200-1.845.7-2.165%201.193v.025h-.016l.016-.025V6.169h-2.4c.03.678%200%207.225%200%207.225z%22%2F%3E%0A%3C%2Fsvg%3E)></i> <span>Twitter</span> </a></ul></footer>

@@ -12,9 +12,9 @@
           <title>Parallelizing the Scan function with Gleam!</title>
           <pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
           <author>Arman Drismir</author>
-          <link>/projects/parallel-reduce-gleam/</link>
-          <guid>/projects/parallel-reduce-gleam/</guid>
-          <description xml:base="/projects/parallel-reduce-gleam/">&lt;h2 id=&quot;scan-overview&quot;&gt;Scan Overview&lt;&#x2F;h2&gt;
+          <link>/projects/parallel-scan-gleam/</link>
+          <guid>/projects/parallel-scan-gleam/</guid>
+          <description xml:base="/projects/parallel-scan-gleam/">&lt;h2 id=&quot;scan-overview&quot;&gt;Scan Overview&lt;&#x2F;h2&gt;
 &lt;p&gt;Scan computes the running total of a list. Eg. for the list &lt;code&gt;[2, 1, 10, 3]&lt;&#x2F;code&gt;, the
 running total would be &lt;code&gt;[0, 2, 3, 13]&lt;&#x2F;code&gt;. On first glance it is not at all obvious
 how this can be done in parallel. For example if we wanted to compute just the
@@ -35,28 +35,28 @@ in a total runtime of &lt;code&gt;2 log(n) + λ&lt;&#x2F;code&gt; (where λ is t
 &lt;p&gt;For an understanding of exactly how we need to pass around the data to achieve this runtime
 look at this visualization for scanning the list &lt;code&gt;[8, 4, 9, 12, 1, 73, 4, 90]&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
 &lt;p&gt;Step #1: Spawn a tree of processes
-&lt;img src=&quot;&#x2F;par-scan-img-0.1.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;par-scan-1.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;Step #2: Run reduce on the leaf nodes, and send result to parent node
-&lt;img src=&quot;&#x2F;par-scan-img-1.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;par-scan-2.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;Step #3: In each parent node, store results of children, then sum them and send to parent
-&lt;img src=&quot;&#x2F;par-scan-img-2.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;par-scan-3.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;Step #4: Repeat for root node. Store results of children then sum them. Because this is the root node,
 instead of sending the sum up, we will begin the downward pass.
-&lt;img src=&quot;&#x2F;par-scan-img-3.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;par-scan-4.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;Step #5: Once the top of the tree has been reached, the root node gives its right child
 the sum of the left half of the tree.
-&lt;img src=&quot;&#x2F;par-scan-img-4.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;par-scan-5.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;Step #6: Now each intermediate node has all the information required to give its
 children the sum of everything to the left.
-&lt;img src=&quot;&#x2F;par-scan-img-5.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;par-scan-6.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;Step #7: Each leaf node uses its sum to calculate its portion of the scan.
-&lt;img src=&quot;&#x2F;par-scan-img-6.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;par-scan-7.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;Step #8: The results of each child’s scan is bubbled up the tree and the parent node
 combines the results.
-&lt;img src=&quot;&#x2F;par-scan-img-7.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;par-scan-8.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;Step #9: The root combines the two halves of the scan results, and we are left
 with the final result!
-&lt;img src=&quot;&#x2F;par-scan-img-8.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;par-scan-9.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;implementation-in-gleam&quot;&gt;Implementation in Gleam&lt;&#x2F;h2&gt;
 &lt;p&gt;(For the full code &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ArmanDris&#x2F;star_scan&quot;&gt;check out the repo&lt;&#x2F;a&gt;)&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;results&quot;&gt;Results&lt;&#x2F;h2&gt;
