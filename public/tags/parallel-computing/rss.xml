@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Arman - Parallel Computing</title>
+      <link>/</link>
+      <description>Hello!</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="/tags/parallel-computing/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Mon, 06 Jul 2026 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Parallelizing the Scan function with Gleam!</title>
+          <pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
+          <author>Arman Drismir</author>
+          <link>/projects/parallel-scan-gleam/</link>
+          <guid>/projects/parallel-scan-gleam/</guid>
+          <description xml:base="/projects/parallel-scan-gleam/">&lt;h2 id=&quot;scan-overview&quot;&gt;Scan Overview&lt;&#x2F;h2&gt;
+&lt;p&gt;Scan computes the running total of a list. Eg. for the list &lt;code&gt;[2, 1, 10, 3]&lt;&#x2F;code&gt;, the
+running total would be &lt;code&gt;[0, 2, 3, 13]&lt;&#x2F;code&gt;. On first glance it is not at all obvious
+how this can be done in parallel. For example if we wanted to compute just the
+last two indexes in their own thread to save time: &lt;code&gt;[10, 3]&lt;&#x2F;code&gt;, we would be stuck
+because we need to know the sum of everything that came before to return the
+result. Of course waiting for the sum of everything that came before ruins the
+benefit of multithreading in the first place.&lt;&#x2F;p&gt;
+&lt;p&gt;The key to parellizing this is with a clever trick. Note that the &lt;code&gt;fold&lt;&#x2F;code&gt; or
+&lt;code&gt;reduce&lt;&#x2F;code&gt; function is easily parallelizable. If we want to calculate the &lt;code&gt;reduce&lt;&#x2F;code&gt;
+of &lt;code&gt;[1, 2, 3, ..., 100]&lt;&#x2F;code&gt; we can just spawn 5 threads, give each thread 20 elements
+and boom we can compute it in &lt;code&gt;log(n)&lt;&#x2F;code&gt; time.&lt;&#x2F;p&gt;
+&lt;p&gt;The clever trick for parallelizing scan is to first run a &lt;code&gt;reduce&lt;&#x2F;code&gt; on the list in
+&lt;code&gt;log(n)&lt;&#x2F;code&gt; time. As we reduce we will pass around the sum of each list segment in
+such a way that all segments will receive their sum of previous elements in at
+worst &lt;code&gt;log(n)&lt;&#x2F;code&gt; time. We can then run the scan parallelly in &lt;code&gt;log(n)&lt;&#x2F;code&gt; time, resulting
+in a total runtime of &lt;code&gt;2 log(n) + λ&lt;&#x2F;code&gt; (where λ is the cost of sending data across threads).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;visualization-of-process-tree&quot;&gt;Visualization of process tree&lt;&#x2F;h2&gt;
+&lt;p&gt;For an understanding of exactly how we need to pass around the data to achieve this runtime
+look at this visualization for scanning the list &lt;code&gt;[8, 4, 9, 12, 1, 73, 4, 90]&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;p&gt;Step #1: Spawn a tree of processes
+&lt;img src=&quot;par-scan-1.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #2: Run reduce on the leaf nodes, and send result to parent node
+&lt;img src=&quot;par-scan-2.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #3: In each parent node, store results of children, then sum them and send to parent
+&lt;img src=&quot;par-scan-3.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #4: Repeat for root node. Store results of children then sum them. Because this is the root node,
+instead of sending the sum up, we will begin the downward pass.
+&lt;img src=&quot;par-scan-4.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #5: Once the top of the tree has been reached, the root node gives its right child
+the sum of the left half of the tree.
+&lt;img src=&quot;par-scan-5.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #6: Now each intermediate node has all the information required to give its
+children the sum of everything to the left.
+&lt;img src=&quot;par-scan-6.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #7: Each leaf node uses its sum to calculate its portion of the scan.
+&lt;img src=&quot;par-scan-7.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #8: The results of each child’s scan is bubbled up the tree and the parent node
+combines the results.
+&lt;img src=&quot;par-scan-8.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Step #9: The root combines the two halves of the scan results, and we are left
+with the final result!
+&lt;img src=&quot;par-scan-9.png&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;implementation-in-gleam&quot;&gt;Implementation in Gleam&lt;&#x2F;h2&gt;
+&lt;p&gt;(For the full code &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ArmanDris&#x2F;star_scan&quot;&gt;check out the repo&lt;&#x2F;a&gt;)&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;results&quot;&gt;Results&lt;&#x2F;h2&gt;
+&lt;p&gt;Using an expensive combination function we can add up 500 elements faster than sequential!&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;star_scan % gleam run
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Sequential scan done in 5501 ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Parallel scan done in 1007 ms
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Note however, this was using this artificially expensive addition function:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;let expensive_combine_fn = fn(a, b) {
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  process.sleep(10)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  int.add(a, b)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;What happens if we use the regular addition function?&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;gleam&quot; class=&quot;language-gleam z-code&quot;&gt;&lt;code class=&quot;language-gleam&quot; data-lang=&quot;gleam&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;star_scan % gleam run
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Sequential scan done in 0 ms
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Parallel scan done in 7 ms
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Our parallel function gets destroyed X_X. This is an important limitation of
+this parallel implementation. We incur a lot of overhead constructing the tree
+and passing values around. This will only ever save time in cases where the
+combine function is very expensive.&lt;&#x2F;p&gt;
+&lt;p&gt;When the combine function is expensive however, this function can give some very
+nice runtimes :)&lt;&#x2F;p&gt;
+</description>
+      </item>
+    </channel>
+</rss>
