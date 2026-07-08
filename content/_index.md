@@ -27,7 +27,7 @@ Right now I am knee deep in the BEAM ecosystem via Erlang, Elixir, and Gleam. My
       <a href="/projects/cpp-chess-engine/">Chess Engine</a>
     </li>
     <li>
-      <img src="/rust-logo.svg" style="display: inline; box-shadow: none; background: none;  margin: 0; margin-bottom: -4px; margin-left: 4px; margin-right: 4px; width: 24px; border-radius: 0;"/>
+      <img src="/rs-logo.png" style="display: inline; background: rgba(255, 120, 0, 0.2) !important; box-shadow: none; background: none;  margin: 0; margin-bottom: -6px; margin-left: 4px; margin-right: 4px; width: 28px; border-radius: 0;"/>
       <a href="/projects/dancing-links-sudoku/"> Generating Sudoku Boards as Efficiently as Possible</a>
     </li>
   </ol>
