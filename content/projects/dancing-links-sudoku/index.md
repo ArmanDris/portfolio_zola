@@ -26,11 +26,11 @@ wayback machine to access it 😬)
 
 ## The Reduction Part of the Algorithm
 
-Dancing links does not solve Sudoku specifically, instead it solves an absolute
+Dancing links does not solve Sudoku specifically, instead it solves an exact 
 cover problem. That is, given a list of rows, find a selection of rows that have
 only one cell in every column.
 
-For example, in the absolute cover problem below, there are two selections that
+For example, in the exact cover problem below, there are two selections that
 solve the problem.
 
 <img src="constraint-matrix.png" />
@@ -48,7 +48,7 @@ solve the problem.
 
 Therefore, to get dancing links to solve a sudoku board we must first devise a
 reduction algorithm that will convert the constraints of a sudoku board into an
-absolute cover problem. For exactly on how we might do this checkout the zendoku
+exact cover problem. For details on how to do this check out the zendoku 
 writeup above, it is a very good resource.
 
 The TLDR; for the reduction is that we have a 729x324 table, where every row
@@ -61,7 +61,7 @@ algorithm and it will return a list of rows where each constraint is satisfied
 exactly one. This means by definition that it is a valid sudoku board.
 
 Once dancing links returns the list of rows, we are not finished yet, we need to
-convert each row back into it's respective number assignment on the sudoku board.
+convert each row back into its respective number assignment on the sudoku board.
 
 ## The Dancing Links part of the Algorithm
 
@@ -113,8 +113,8 @@ in that row. (<a href="https://github.com/ArmanDris/dancing_links_sudoku/blob/bc
 
 It would be impossible to enumerate all the fiddly details of implementing dancing links
 (which is probably why knuth and the Zendoku writeup avoid doing it as well). If
-you would like to implement this algorithm for yourself work through some simple examples
-to understand the ideas behind the reduction, the run through the algorithm by hand
+you would like to implement this algorithm for yourself, work through some simple examples
+to understand the ideas behind the reduction, then run through the algorithm by hand
 to understand the huge time save dancing links gives.
 
 ## How Fast is it?

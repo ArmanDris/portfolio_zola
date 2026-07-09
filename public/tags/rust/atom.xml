@@ -35,10 +35,10 @@ on how the 2007 Nintendo DS game Zedoku implemented dancing links.
 (The original website for the writeup has been lost to time so I had to use the
 wayback machine to access it 😬)&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;the-reduction-part-of-the-algorithm&quot;&gt;The Reduction Part of the Algorithm&lt;&#x2F;h2&gt;
-&lt;p&gt;Dancing links does not solve Sudoku specifically, instead it solves an absolute
+&lt;p&gt;Dancing links does not solve Sudoku specifically, instead it solves an exact
 cover problem. That is, given a list of rows, find a selection of rows that have
 only one cell in every column.&lt;&#x2F;p&gt;
-&lt;p&gt;For example, in the absolute cover problem below, there are two selections that
+&lt;p&gt;For example, in the exact cover problem below, there are two selections that
 solve the problem.&lt;&#x2F;p&gt;
 &lt;img src=&quot;constraint-matrix.png&quot; &#x2F;&gt;
 &lt;div class=&quot;container&quot; style=&quot;display: flex; width: 100%;&quot;&gt;
@@ -53,7 +53,7 @@ solve the problem.&lt;&#x2F;p&gt;
 &lt;&#x2F;div&gt;
 &lt;p&gt;Therefore, to get dancing links to solve a sudoku board we must first devise a
 reduction algorithm that will convert the constraints of a sudoku board into an
-absolute cover problem. For exactly on how we might do this checkout the zendoku
+exact cover problem. For details on how to do this check out the zendoku
 writeup above, it is a very good resource.&lt;&#x2F;p&gt;
 &lt;p&gt;The TLDR; for the reduction is that we have a 729x324 table, where every row
 represents a single number being assigned into a single cell (Ie. row 0
@@ -63,7 +63,7 @@ constraint (ie. row 1 must have a 5 in it).&lt;&#x2F;p&gt;
 algorithm and it will return a list of rows where each constraint is satisfied
 exactly one. This means by definition that it is a valid sudoku board.&lt;&#x2F;p&gt;
 &lt;p&gt;Once dancing links returns the list of rows, we are not finished yet, we need to
-convert each row back into it’s respective number assignment on the sudoku board.&lt;&#x2F;p&gt;
+convert each row back into its respective number assignment on the sudoku board.&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;the-dancing-links-part-of-the-algorithm&quot;&gt;The Dancing Links part of the Algorithm&lt;&#x2F;h2&gt;
 &lt;p&gt;The reduction is only half the battle of the algorithm. If you used only the
 above insights you would actually be implementing algorithm x, not dancing links.
@@ -105,8 +105,8 @@ us to instantly find the next available row instead of needing to check every in
 in that row. (&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ArmanDris&#x2F;dancing_links_sudoku&#x2F;blob&#x2F;bc571c155f4069a0022cd3feb6efb340a2e175e0&#x2F;src&#x2F;dancing_links.rs#L346-L375&quot; target=&quot;_blank&quot;&gt;Link to source code for selecting row&lt;&#x2F;a&gt;)&lt;&#x2F;p&gt;
 &lt;p&gt;It would be impossible to enumerate all the fiddly details of implementing dancing links
 (which is probably why knuth and the Zendoku writeup avoid doing it as well). If
-you would like to implement this algorithm for yourself work through some simple examples
-to understand the ideas behind the reduction, the run through the algorithm by hand
+you would like to implement this algorithm for yourself, work through some simple examples
+to understand the ideas behind the reduction, then run through the algorithm by hand
 to understand the huge time save dancing links gives.&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;how-fast-is-it&quot;&gt;How Fast is it?&lt;&#x2F;h2&gt;
 &lt;p&gt;Thankfully, after implementing dancing links I was able to beat backtracking
